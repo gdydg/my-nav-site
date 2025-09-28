@@ -541,9 +541,24 @@
             <div class="flex-grow overflow-y-auto pr-4">
                 <div class="bg-gray-900 p-6 rounded-lg mb-6">
                     <h3 class="text-xl font-semibold mb-4" data-i18n-key="globalSettings">全局设置</h3>
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
                         <input type="text" id="background-url-input" data-i18n-key="backgroundPlaceholder" placeholder="输入背景图片 URL" class="w-full flex-grow bg-gray-700 border border-gray-600 rounded-md p-2">
                         <button id="save-background-btn" class="w-full sm:w-auto flex-shrink-0 bg-green-600 hover:bg-green-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="saveBackground">保存背景</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <label class="text-sm font-medium" data-i18n-key="frequentSitesCount">常用网站显示数量：</label>
+                        <select id="frequent-sites-count-select" class="bg-gray-700 border border-gray-600 rounded-md p-2">
+                            <option value="4">4</option>
+                            <option value="6">6</option>
+                            <option value="8" selected>8</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                            <option value="16">16</option>
+                            <option value="20">20</option>
+                            <option value="24">24</option>
+                            <option value="0" data-i18n-key="hideFrequentSites">隐藏常用网站</option>
+                        </select>
+                        <button id="save-preferences-btn" class="bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="saveSettings">保存设置</button>
                     </div>
                 </div>
                 <div class="bg-gray-900 p-6 rounded-lg mb-6">
@@ -656,11 +671,11 @@
         const translations = {
             en: {
                 navMenu: "Navigation Menu", searchPlaceholder: "Search sites...", adminLogin: "Admin Login", passwordPlaceholder: "Enter admin password", login: "Login", adminPanel: "Admin Panel", globalSettings: "Global Settings", backgroundPlaceholder: "Enter background image URL", saveBackground: "Save Background", categoryManagement: "Category Management", newCategoryPlaceholder: "New category name", sidebar: "Sidebar", topbar: "Topbar", siteManagement: "Site Management", selectCategory: "Select a category", siteNamePlaceholder: "Site Name", siteUrlPlaceholder: "Site URL", iconUrlPlaceholder: "Icon URL (optional)", siteDescPlaceholder: "Site Description", addSite: "Add Site", allSites: "All Sites", noSitesFound: "No sites found.", passwordIncorrect: "Incorrect password, please try again.", backgroundSaved: "Background saved successfully!", backgroundSaveFailed: "Failed to save background.", fillRequiredFields: "Please fill in all required fields.", confirmCategoryDeletion: "Are you sure you want to delete this category? All associated sites will also be deleted.", confirmSiteDeletion: "Are you sure you want to delete this site?", dataLoadFailed: "Failed to load data. Please check the browser console (F12) for more details and ensure the backend API is running correctly.", modalOk: "OK", modalCancel: "Cancel", modalConfirm: "Confirm", saveOrder: "Save Order", orderSaved: "Order saved successfully!", editSite: "Edit Site", saveChanges: "Save Changes", siteUpdated: "Site updated successfully!", noAudioFile: "Please add an audio file to the playlist first.", loadingPlaylists: "Loading playlists...", gettingAudioUrl: "Getting audio URL...", getUrlFailed: "Failed to get audio URL", noAvailableSongs: "No available songs", checkApiConfig: "Please check API or playlist config",
-                frequentSites: "Frequent Sites", tagsPlaceholder: "Tags (comma separated)", selectGroup: "Select Group (optional)", importExport: "Import/Export", exportData: "Export Data", importData: "Import Data", importSuccess: "Data imported successfully!", importFailed: "Import failed. Please check the file format.", visitCount: "visits", saveSitesOrder: "Save Sites Order", sitesOrderSaved: "Sites order saved successfully!", categoryTip: "Drag to reorder, change type with dropdown"
+                frequentSites: "Frequent Sites", tagsPlaceholder: "Tags (comma separated)", selectGroup: "Select Group (optional)", importExport: "Import/Export", exportData: "Export Data", importData: "Import Data", importSuccess: "Data imported successfully!", importFailed: "Import failed. Please check the file format.", visitCount: "visits", saveSitesOrder: "Save Sites Order", sitesOrderSaved: "Sites order saved successfully!", categoryTip: "Drag to reorder, change type with dropdown", frequentSitesCount: "Frequent Sites Count:", hideFrequentSites: "Hide Frequent Sites", saveSettings: "Save Settings"
             },
             zh: {
                 navMenu: "导航菜单", searchPlaceholder: "搜索网站...", adminLogin: "管理员登录", passwordPlaceholder: "请输入管理密码", login: "登录", adminPanel: "管理面板", globalSettings: "全局设置", backgroundPlaceholder: "输入背景图片 URL", saveBackground: "保存背景", categoryManagement: "分类管理", newCategoryPlaceholder: "新分类名称", sidebar: "侧边栏", topbar: "顶部栏", siteManagement: "网站管理", selectCategory: "选择一个分类", siteNamePlaceholder: "网站名称", siteUrlPlaceholder: "网站 URL", iconUrlPlaceholder: "图标 URL (可选)", siteDescPlaceholder: "网站简介", addSite: "添加网站", allSites: "所有网站", noSitesFound: "没有找到网站。", passwordIncorrect: "密码错误，请重试。", backgroundSaved: "背景已保存！", backgroundSaveFailed: "背景保存失败。", fillRequiredFields: "请填写所有必填字段。", confirmCategoryDeletion: "确定要删除这个分类吗？其下的所有网站也会被一并删除。", confirmSiteDeletion: "确定要删除这个网站吗？", dataLoadFailed: "数据加载失败。请按 F12 查看浏览器控制台获取更多信息，并确保后端 API 运行正常。", modalOk: "好的", modalCancel: "取消", modalConfirm: "确定", saveOrder: "保存顺序", orderSaved: "顺序已保存！", editSite: "编辑网站", saveChanges: "保存更改", siteUpdated: "网站已成功更新！", noAudioFile: "请先添加音频文件到播放列表", loadingPlaylists: "正在加载歌单...", gettingAudioUrl: "正在获取音频链接...", getUrlFailed: "获取音频链接失败", noAvailableSongs: "无可用歌曲", checkApiConfig: "请检查API或歌单配置",
-                frequentSites: "常用网站", tagsPlaceholder: "标签 (用逗号分隔)", selectGroup: "选择分组 (可选)", importExport: "导入导出", exportData: "导出数据", importData: "导入数据", importSuccess: "数据导入成功！", importFailed: "导入失败，请检查文件格式。", visitCount: "次访问", saveSitesOrder: "保存网站顺序", sitesOrderSaved: "网站顺序已保存！", categoryTip: "拖拽调整顺序，下拉框切换栏位"
+                frequentSites: "常用网站", tagsPlaceholder: "标签 (用逗号分隔)", selectGroup: "选择分组 (可选)", importExport: "导入导出", exportData: "导出数据", importData: "导入数据", importSuccess: "数据导入成功！", importFailed: "导入失败，请检查文件格式。", visitCount: "次访问", saveSitesOrder: "保存网站顺序", sitesOrderSaved: "网站顺序已保存！", categoryTip: "拖拽调整顺序，下拉框切换栏位", frequentSitesCount: "常用网站显示数量：", hideFrequentSites: "隐藏常用网站", saveSettings: "保存设置"
             }
         };
 
@@ -723,6 +738,8 @@
             importFileInput: document.getElementById('import-file-input'),
             frequentSitesSection: document.getElementById('frequent-sites'),
             frequentSitesGrid: document.getElementById('frequent-sites-grid'),
+            frequentSitesCountSelect: document.getElementById('frequent-sites-count-select'),
+            savePreferencesBtn: document.getElementById('save-preferences-btn'),
             mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
             desktopSidebarToggle: document.getElementById('desktop-sidebar-toggle'),
             desktopSidebarIcon: document.getElementById('desktop-sidebar-icon'),
@@ -1207,7 +1224,9 @@
         
         // Render frequent sites
         function renderFrequentSites() {
-            if (!state.showFrequentSites || state.frequentSites.length === 0) {
+            const frequentSitesCount = parseInt(state.userPreferences.frequent_sites_count) || 8;
+            
+            if (!state.showFrequentSites || state.frequentSites.length === 0 || frequentSitesCount === 0) {
                 DOMElements.frequentSitesSection.classList.add('hidden');
                 return;
             }
@@ -1215,7 +1234,8 @@
             DOMElements.frequentSitesSection.classList.remove('hidden');
             DOMElements.frequentSitesGrid.innerHTML = '';
             
-            state.frequentSites.slice(0, 8).forEach((site, index) => {
+            const maxFrequentSites = parseInt(state.userPreferences.frequent_sites_count) || 8;
+            state.frequentSites.slice(0, maxFrequentSites).forEach((site, index) => {
                 const item = document.createElement('a');
                 item.href = site.url;
                 item.target = '_blank';
@@ -1460,6 +1480,13 @@
                 opt.textContent = `${cat.name} (${translations[state.currentLanguage][cat.type] || cat.type})`;
                 DOMElements.siteCategorySelect.appendChild(opt);
             });
+            
+            // 设置当前的常用网站数量
+            if (DOMElements.frequentSitesCountSelect) {
+                const currentCount = state.userPreferences.frequent_sites_count || '8';
+                DOMElements.frequentSitesCountSelect.value = state.showFrequentSites ? currentCount : '0';
+            }
+            
             lucide.createIcons();
         }
 
@@ -1514,6 +1541,26 @@
                 const url = DOMElements.backgroundUrlInput.value.trim();
                 if (url) {
                     try { await api.post('settings', { backgroundUrl: url }); customAlert('backgroundSaved'); document.body.style.backgroundImage = `url('${url}')`; } catch (err) { customAlert('backgroundSaveFailed'); console.error(err); }
+                }
+            };
+            
+            // 保存用户偏好设置
+            DOMElements.savePreferencesBtn.onclick = async () => {
+                const frequentSitesCount = DOMElements.frequentSitesCountSelect.value;
+                const preferences = {
+                    frequent_sites_count: frequentSitesCount,
+                    show_frequent_sites: frequentSitesCount !== '0' ? 'true' : 'false'
+                };
+                
+                try {
+                    await api.post('user-preferences', preferences);
+                    state.userPreferences = { ...state.userPreferences, ...preferences };
+                    state.showFrequentSites = frequentSitesCount !== '0';
+                    customAlert('saveSettings');
+                    renderFrequentSites();
+                } catch (err) {
+                    console.error('Failed to save preferences:', err);
+                    customAlert('Failed to save settings.', false);
                 }
             };
             DOMElements.addCategoryForm.onsubmit = async (e) => { e.preventDefault(); const name = DOMElements.categoryNameInput.value.trim(); const type = DOMElements.categoryTypeSelect.value; if (name) { await api.post('categories', { name, type }); DOMElements.categoryNameInput.value = ''; loadInitialData(); } };
