@@ -7,6 +7,43 @@
 
 示例站点：https://nas.ikun.pp.ua
 
+## 最新功能更新 🚀
+
+### 1. 常用网站自动排序
+- 导航站顶部新增「常用网站」区域
+- 根据访问频率自动排序，最常访问的网站会显示在最前面
+- 显示访问次数统计
+- 支持快捷键访问（数字键 1-9）
+
+### 2. 增强的搜索功能
+- 支持中文拼音搜索
+- 支持按标签搜索
+- 支持模糊匹配
+
+### 3. 网站标签系统
+- 为每个网站添加多个标签
+- 标签以美观的标签形式显示
+- 支持按标签筛选网站
+
+### 4. 网站分组功能
+- 可以创建自定义分组
+- 将相关网站归类到同一分组
+- 分组支持自定义颜色和图标
+
+### 5. 导入导出功能
+- 一键导出所有数据为 JSON 文件
+- 支持从备份文件恢复数据
+- 方便迁移和备份
+
+### 6. 优化的后台管理
+- 分类拖拽排序功能更加流畅
+- 编辑网站时支持标签和分组
+- 更直观的管理界面
+
+### 7. 快捷键导航
+- 数字键 1-9：快速打开常用网站
+- 智能识别，避免与输入框冲突
+
 
 
 一、项目核心特点与功能
@@ -89,6 +126,50 @@ INSERT INTO settings (key, value) VALUES ('backgroundUrl', 'https://iili.io/FSa7
 ```
 ```
 ALTER TABLE categories ADD COLUMN displayOrder INTEGER;
+```
+
+新增表结构（用于支持新功能）：
+
+```sql
+-- 添加网站访问统计表
+CREATE TABLE IF NOT EXISTS site_visits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  site_id INTEGER NOT NULL,
+  visit_count INTEGER DEFAULT 0,
+  last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+);
+
+-- 为sites表添加额外字段
+ALTER TABLE sites ADD COLUMN visit_count INTEGER DEFAULT 0;
+ALTER TABLE sites ADD COLUMN tags TEXT;
+ALTER TABLE sites ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE sites ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- 添加网站分组表
+CREATE TABLE IF NOT EXISTS site_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  color TEXT,
+  icon TEXT,
+  display_order INTEGER DEFAULT 0
+);
+
+-- 为sites表添加分组关联
+ALTER TABLE sites ADD COLUMN group_id INTEGER REFERENCES site_groups(id);
+
+-- 添加用户偏好设置表
+CREATE TABLE IF NOT EXISTS user_preferences (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+-- 初始化一些默认设置
+INSERT OR IGNORE INTO user_preferences (key, value) VALUES 
+  ('show_frequent_sites', 'true'),
+  ('frequent_sites_count', '8'),
+  ('enable_shortcuts', 'true'),
+  ('enable_pinyin_search', 'true');
 ```
 
 2.fork项目，到cloudflare创建pages连接Git仓库，选择构建目录`public`，点击部署。
