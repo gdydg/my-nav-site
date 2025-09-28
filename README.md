@@ -103,20 +103,28 @@
 
 1.创建D1数据库`my-nav-site`，到控制台依次输入命令并逐一执行
 
-```
+## 基础表结构：
+
+### 1. 设置表
+```sql
 CREATE TABLE settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
 ```
-```
+
+### 2. 分类表
+```sql
 CREATE TABLE categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar'))
+  type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar')),
+  displayOrder INTEGER
 );
 ```
-```
+
+### 3. 网站表
+```sql
 CREATE TABLE sites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   categoryId INTEGER NOT NULL,
@@ -124,20 +132,19 @@ CREATE TABLE sites (
   url TEXT NOT NULL,
   icon TEXT,
   description TEXT,
-  FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE 
+  visit_count INTEGER DEFAULT 0,
+  tags TEXT,
+  group_id INTEGER,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE,
+  FOREIGN KEY (group_id) REFERENCES site_groups(id)
 );
 ```
-```
-INSERT INTO settings (key, value) VALUES ('backgroundUrl', 'https://iili.io/FSa7FDB.gif');
-```
-```
-ALTER TABLE categories ADD COLUMN displayOrder INTEGER;
-```
 
-新增表结构（用于支持新功能）：
-
+### 4. 网站访问统计表
 ```sql
-
 CREATE TABLE IF NOT EXISTS site_visits (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   site_id INTEGER NOT NULL,
@@ -145,14 +152,10 @@ CREATE TABLE IF NOT EXISTS site_visits (
   last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
 );
+```
 
-
-ALTER TABLE sites ADD COLUMN visit_count INTEGER DEFAULT 0;
-ALTER TABLE sites ADD COLUMN tags TEXT;
-ALTER TABLE sites ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE sites ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-
-
+### 5. 网站分组表
+```sql
 CREATE TABLE IF NOT EXISTS site_groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -160,15 +163,19 @@ CREATE TABLE IF NOT EXISTS site_groups (
   icon TEXT,
   display_order INTEGER DEFAULT 0
 );
+```
 
-
-ALTER TABLE sites ADD COLUMN group_id INTEGER REFERENCES site_groups(id);
-
-
+### 6. 用户偏好设置表
+```sql
 CREATE TABLE IF NOT EXISTS user_preferences (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+```
+
+### 7. 初始化默认数据
+```sql
+INSERT INTO settings (key, value) VALUES ('backgroundUrl', 'https://iili.io/FSa7FDB.gif');
 
 INSERT OR IGNORE INTO user_preferences (key, value) VALUES 
   ('show_frequent_sites', 'true'),
@@ -176,13 +183,10 @@ INSERT OR IGNORE INTO user_preferences (key, value) VALUES
   ('enable_shortcuts', 'true'),
   ('enable_pinyin_search', 'true');
 ```
+
+### 8. 更新现有数据（如果是升级）
 ```sql
--- 为sites表添加display_order字段
-ALTER TABLE sites ADD COLUMN display_order INTEGER DEFAULT 0;
-```
-```sql
--- 为现有网站设置初始排序值
-UPDATE sites SET display_order = id WHERE display_order = 0;
+UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS NULL;
 ```
 
 2.fork项目，到cloudflare创建pages连接Git仓库，选择构建目录`public`，点击部署。
