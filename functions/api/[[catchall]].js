@@ -72,6 +72,21 @@ async function handleApiRequest(request, env) {
             await env.DB.batch(statements);
             return jsonResponse({ success: true });
         }
+        if (request.method === 'POST' && pathParts[2] === 'update-all') {
+            const { updates } = await request.json();
+            if (!Array.isArray(updates)) {
+                return jsonResponse({ error: 'Invalid data format, expected updates array' }, 400);
+            }
+
+            const statements = updates.map(update => {
+                return env.DB.prepare(
+                    'UPDATE categories SET type = ?, displayOrder = ? WHERE id = ?'
+                ).bind(update.type, update.displayOrder, update.id);
+            });
+
+            await env.DB.batch(statements);
+            return jsonResponse({ success: true });
+        }
         break;
 
       case 'sites':
