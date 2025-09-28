@@ -76,7 +76,7 @@ async function handleApiRequest(request, env) {
 
       case 'sites':
         if (request.method === 'GET' && !pathParts[2]) {
-          const { results } = await env.DB.prepare('SELECT * FROM sites').all();
+          const { results } = await env.DB.prepare('SELECT * FROM sites ORDER BY categoryId, display_order, id').all();
           return jsonResponse(results || []);
         }
         if (request.method === 'GET' && pathParts[2] === 'frequent') {
@@ -88,9 +88,16 @@ async function handleApiRequest(request, env) {
         if (request.method === 'POST' && !pathParts[3]) {
           const { categoryId, name, url, icon, description, tags, group_id } = await request.json();
           if (!categoryId || !name || !url) return jsonResponse({ error: 'Missing fields' }, 400);
+          
+          // 获取当前分类中的最大display_order
+          const { results } = await env.DB.prepare(
+            'SELECT MAX(display_order) as maxOrder FROM sites WHERE categoryId = ?'
+          ).bind(categoryId).all();
+          const newOrder = (results[0].maxOrder || 0) + 1;
+          
           const stmt = env.DB.prepare(
-            'INSERT INTO sites (categoryId, name, url, icon, description, tags, group_id, visit_count) VALUES (?, ?, ?, ?, ?, ?, ?, 0)'
-          ).bind(categoryId, name, url, icon || '', description || '', tags || '', group_id || null);
+            'INSERT INTO sites (categoryId, name, url, icon, description, tags, group_id, visit_count, display_order) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)'
+          ).bind(categoryId, name, url, icon || '', description || '', tags || '', group_id || null, newOrder);
           const { meta } = await stmt.run();
           return jsonResponse({ success: true, id: meta.last_row_id });
         }
@@ -118,6 +125,21 @@ async function handleApiRequest(request, env) {
             ).bind(categoryId, name, url, icon || '', description || '', tags || '', group_id || null, id);
             await stmt.run();
             return jsonResponse({ success: true });
+        }
+        if (request.method === 'POST' && pathParts[2] === 'order') {
+          const { categoryId, orderedIds } = await request.json();
+          if (!categoryId || !Array.isArray(orderedIds)) {
+            return jsonResponse({ error: 'Invalid data format' }, 400);
+          }
+          
+          const statements = orderedIds.map((id, index) => {
+            return env.DB.prepare(
+              'UPDATE sites SET display_order = ? WHERE id = ? AND categoryId = ?'
+            ).bind(index, id, categoryId);
+          });
+          
+          await env.DB.batch(statements);
+          return jsonResponse({ success: true });
         }
         if (request.method === 'DELETE' && id) {
           await env.DB.prepare('DELETE FROM sites WHERE id = ?').bind(id).run();

@@ -37,3 +37,9 @@ INSERT OR IGNORE INTO user_preferences (key, value) VALUES
   ('frequent_sites_count', '8'),
   ('enable_shortcuts', 'true'),
   ('enable_pinyin_search', 'true');
+
+-- 为sites表添加display_order字段
+ALTER TABLE sites ADD COLUMN display_order INTEGER DEFAULT 0;
+
+-- 为现有网站设置初始排序值
+UPDATE sites SET display_order = id WHERE display_order = 0;

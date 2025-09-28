@@ -44,6 +44,12 @@
 - 数字键 1-9：快速打开常用网站
 - 智能识别，避免与输入框冲突
 
+### 8. 网站自由排序 🆕
+- **分类排序**：侧边栏和顶部栏的分类可以通过拖拽调整顺序
+- **网站排序**：每个分类内的网站也可以自由拖拽排序
+- **分组管理**：后台管理面板中，网站按分类分组显示，更加清晰
+- **实时保存**：拖拽后点击保存按钮即可保存新顺序
+
 
 
 一、项目核心特点与功能
@@ -169,6 +175,14 @@ INSERT OR IGNORE INTO user_preferences (key, value) VALUES
   ('frequent_sites_count', '8'),
   ('enable_shortcuts', 'true'),
   ('enable_pinyin_search', 'true');
+```
+```sql
+-- 为sites表添加display_order字段
+ALTER TABLE sites ADD COLUMN display_order INTEGER DEFAULT 0;
+```
+```sql
+-- 为现有网站设置初始排序值
+UPDATE sites SET display_order = id WHERE display_order = 0;
 ```
 
 2.fork项目，到cloudflare创建pages连接Git仓库，选择构建目录`public`，点击部署。
