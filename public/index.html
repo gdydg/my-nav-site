@@ -1634,21 +1634,28 @@
                     const typeSelect = el.querySelector('.category-type-select');
                     const newType = typeSelect ? typeSelect.value : el.dataset.type;
                     
+                    if (!categoryId) {
+                        console.error('Missing category ID for element:', el);
+                        return;
+                    }
+                    
                     updates.push({
-                        id: categoryId,
+                        id: parseInt(categoryId), // 确保 ID 是数字
                         type: newType,
                         displayOrder: index
                     });
                 });
                 
                 try {
+                    console.log('Saving category updates:', updates);
                     await api.post('categories/update-all', { updates });
                     customAlert('orderSaved');
                     DOMElements.saveOrderBtn.classList.add('hidden');
                     await loadInitialData();
                 } catch (err) {
                     console.error("Failed to save order:", err);
-                    customAlert("Failed to save order.", false);
+                    console.error("Error details:", err.body || err.message);
+                    customAlert("Failed to save order. Check console for details.", false);
                 }
             };
             

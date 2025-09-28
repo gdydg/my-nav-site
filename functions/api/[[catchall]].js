@@ -43,7 +43,7 @@ async function handleApiRequest(request, env) {
           const { results } = await env.DB.prepare('SELECT * FROM categories ORDER BY displayOrder, id').all();
           return jsonResponse(results || []);
         }
-        if (request.method === 'POST' && pathParts[2] !== 'order') {
+        if (request.method === 'POST' && !pathParts[2]) {
           const { name, type } = await request.json();
           if (!name || !type) return jsonResponse({ error: 'Missing fields' }, 400);
           
