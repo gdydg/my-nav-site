@@ -353,18 +353,6 @@
             width: 100%;
         }
         
-        .visit-count-badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(59, 130, 246, 0.8);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-        
         /* --- Shortcut Key Styles --- */
         .shortcut-hint {
             position: absolute;
@@ -1247,7 +1235,6 @@
                     <img src="${iconUrl}" alt="${site.name}" class="frequent-site-icon" 
                          onerror="this.onerror=null;this.src='https://placehold.co/48x48/777/eee?text=${site.name.charAt(0)}'">
                     <span class="frequent-site-name">${site.name}</span>
-                    <span class="visit-count-badge">${site.visit_count || 0}</span>
                 `;
                 
                 DOMElements.frequentSitesGrid.appendChild(item);
