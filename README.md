@@ -300,3 +300,8 @@ UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS 
    - API 报错 500：确认已为 Worker 绑定 D1（绑定名 `DB`），且已按上文在 D1 控制台完成初始化 SQL。
    - 更新前端/后端：前端更新后重新上传 `public/` 并发布；后端在在线编辑器中修改脚本并保存部署。
 
+### workers部署优点
+
+经过优选RT
+
+![屏幕截图 2025-10-03 204908.png](https://imge.ssss.bio/file/1759495863127_屏幕截图_2025-10-03_204908.png)
