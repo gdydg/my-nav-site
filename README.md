@@ -279,3 +279,41 @@ UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS 
 6.缺点是在管理面板编辑保存时有时需一段时间缓存加载。
 
 
+### 使用 Workers 部署（从 Pages 迁移）
+
+1. 安装依赖并登录 Cloudflare
+
+   ```bash
+   npm install
+   npx wrangler login
+   ```
+
+2. 绑定 D1 数据库
+
+   - 在 `wrangler.jsonc` 的 `d1_databases` 中，将 `database_id` 替换为你的 D1 实例 ID。
+   - `binding` 必须为 `DB`（代码已按此约定）。
+
+3. 本地开发
+
+   ```bash
+   npm run dev
+   ```
+
+   打开本地地址，静态资源由 Workers `ASSETS` 提供，API 路由为 `/api/*`。
+
+4. 部署到 Workers
+
+   ```bash
+   npm run deploy
+   ```
+
+5. 静态资源目录
+
+   - 已将 `wrangler.jsonc` 中的 `assets.directory` 指向 `./public`。
+   - 你可以直接把前端文件放在 `public/` 下。
+
+6. 注意事项
+
+   - 若首次部署没有 D1 数据，参考本文档前面的 SQL 初始化片段在 D1 控制台执行建表与初始化数据。
+   - 若你之前使用的是 Pages Functions（`functions/` 目录），现在已由 `src/worker.js` 接管 API 逻辑。
+

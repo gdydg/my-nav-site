@@ -1,8 +1,16 @@
 {
     "name": "my-nav-site",
+    "main": "src/worker.js",
     "compatibility_date": "2025-06-04",
     "assets": {
-      "directory": "./dist"
-    }
+      "directory": "./public"
+    },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "my-nav-site",
+        "database_id": "729bab9e-981f-4aa2-9e12-8096478abc28"
+      }
+    ]
   }
   
