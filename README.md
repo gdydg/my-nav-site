@@ -99,7 +99,7 @@
 
 
 
-# cloudflare部署
+# Cloudflare 部署（无需终端）
 
 1.创建D1数据库`my-nav-site`，到控制台执行 SQL 命令
 
@@ -268,52 +268,35 @@ INSERT OR IGNORE INTO user_preferences (key, value) VALUES
 UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS NULL;
 ```
 
-2.fork项目，到cloudflare创建pages连接Git仓库，选择构建目录`public`，点击部署。
+2. 在 Cloudflare 控制台创建 Worker（无需终端）
 
-3.绑定D1数据库，名称为`DB`,重新部署令数据库生效。
+   - 进入「Workers & Pages」→「Workers」→「创建应用」→「创建 Worker」。
+   - 在在线编辑器中，将仓库里的 `src/worker.js` 代码粘贴到脚本，点击「保存并部署」。
 
-4.管理员密码默认`password123`，可变量`ADMIN_PASSWORD`修改或到index.html文件第198行修改。
+3. 绑定 D1 数据库
 
-5.添加网站可以到`https://favicon.im/zh/`获取网站图标。
+   - 打开该 Worker →「设置」→「绑定」→「D1 数据库」→「添加」。
+   - 绑定名称填 `DB`（必须与代码一致），数据库选择上面创建的 `my-nav-site`。
+   - 保存后重新部署以生效。
 
-6.缺点是在管理面板编辑保存时有时需一段时间缓存加载。
+4. 配置静态资源（Assets）
 
+   - 在 Worker →「设置」→「静态资源（Assets）」中启用静态资源。
+   - 绑定名称填 `ASSETS`（需与代码一致）。
+   - 上传项目的 `public/` 目录（或将其压缩为 zip 后上传），保存并发布。
 
-### 使用 Workers 部署（从 Pages 迁移）
+5. 可选设置
 
-1. 安装依赖并登录 Cloudflare
+   - 管理员密码默认 `password123`。可在 Worker 的「设置」→「变量与密钥」中新增 `ADMIN_PASSWORD` 覆盖。
+   - 添加网站图标可到 `https://favicon.im/zh/` 获取。
 
-   ```bash
-   npm install
-   npx wrangler login
-   ```
+6. 绑定域名与路由
 
-2. 绑定 D1 数据库
+   - 在 Worker 的「触达（Triggers）」→「路由」中添加 `你的域名/*` 路由，或使用 `*.workers.dev` 子域名访问。
 
-   - 在 `wrangler.jsonc` 的 `d1_databases` 中，将 `database_id` 替换为你的 D1 实例 ID。
-   - `binding` 必须为 `DB`（代码已按此约定）。
+7. 常见问题
 
-3. 本地开发
-
-   ```bash
-   npm run dev
-   ```
-
-   打开本地地址，静态资源由 Workers `ASSETS` 提供，API 路由为 `/api/*`。
-
-4. 部署到 Workers
-
-   ```bash
-   npm run deploy
-   ```
-
-5. 静态资源目录
-
-   - 已将 `wrangler.jsonc` 中的 `assets.directory` 指向 `./public`。
-   - 你可以直接把前端文件放在 `public/` 下。
-
-6. 注意事项
-
-   - 若首次部署没有 D1 数据，参考本文档前面的 SQL 初始化片段在 D1 控制台执行建表与初始化数据。
-   - 若你之前使用的是 Pages Functions（`functions/` 目录），现在已由 `src/worker.js` 接管 API 逻辑。
+   - 访问静态文件 404：确认已启用静态资源并将绑定名设为 `ASSETS`，且已上传 `public/`。
+   - API 报错 500：确认已为 Worker 绑定 D1（绑定名 `DB`），且已按上文在 D1 控制台完成初始化 SQL。
+   - 更新前端/后端：前端更新后重新上传 `public/` 并发布；后端在在线编辑器中修改脚本并保存部署。
 
