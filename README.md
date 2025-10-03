@@ -7,6 +7,49 @@
 
 示例站点：https://nas.ikun.pp.ua
 
+## 最新功能更新 🚀
+
+### 1. 常用网站自动排序
+- 导航站顶部新增「常用网站」区域
+- 根据访问频率自动排序，最常访问的网站会显示在最前面
+- 显示访问次数统计
+- 支持快捷键访问（数字键 1-9）
+
+### 2. 增强的搜索功能
+- 支持中文拼音搜索
+- 支持按标签搜索
+- 支持模糊匹配
+
+### 3. 网站标签系统
+- 为每个网站添加多个标签
+- 标签以美观的标签形式显示
+- 支持按标签筛选网站
+
+### 4. 网站分组功能
+- 可以创建自定义分组
+- 将相关网站归类到同一分组
+- 分组支持自定义颜色和图标
+
+### 5. 导入导出功能
+- 一键导出所有数据为 JSON 文件
+- 支持从备份文件恢复数据
+- 方便迁移和备份
+
+### 6. 优化的后台管理
+- 分类拖拽排序功能更加流畅
+- 编辑网站时支持标签和分组
+- 更直观的管理界面
+
+### 7. 快捷键导航
+- 数字键 1-9：快速打开常用网站
+- 智能识别，避免与输入框冲突
+
+### 8. 网站自由排序 🆕
+- **分类排序**：侧边栏和顶部栏的分类可以通过拖拽调整顺序
+- **网站排序**：每个分类内的网站也可以自由拖拽排序
+- **分组管理**：后台管理面板中，网站按分类分组显示，更加清晰
+- **实时保存**：拖拽后点击保存按钮即可保存新顺序
+
 
 
 一、项目核心特点与功能
@@ -58,22 +101,109 @@
 
 # cloudflare部署
 
-1.创建D1数据库`my-nav-site`，到控制台依次输入命令并逐一执行
+1.创建D1数据库`my-nav-site`，到控制台执行 SQL 命令
 
+## 方法一：一次性执行（推荐）
+
+复制以下所有内容，粘贴到 D1 控制台一次执行：
+
+```sql
+
+
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar')),
+  displayOrder INTEGER
+);
+
+
+CREATE TABLE IF NOT EXISTS site_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  color TEXT,
+  icon TEXT,
+  display_order INTEGER DEFAULT 0
+);
+
+
+CREATE TABLE IF NOT EXISTS sites (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  categoryId INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  icon TEXT,
+  description TEXT,
+  visit_count INTEGER DEFAULT 0,
+  tags TEXT,
+  group_id INTEGER,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE,
+  FOREIGN KEY (group_id) REFERENCES site_groups(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS site_visits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  site_id INTEGER NOT NULL,
+  visit_count INTEGER DEFAULT 0,
+  last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS user_preferences (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+
+INSERT OR IGNORE INTO settings (key, value) VALUES 
+  ('backgroundUrl', 'https://iili.io/FSa7FDB.gif');
+
+
+INSERT OR IGNORE INTO user_preferences (key, value) VALUES 
+  ('show_frequent_sites', 'true'),
+  ('frequent_sites_count', '8'),
+  ('enable_shortcuts', 'true'),
+  ('enable_pinyin_search', 'true');
+
+
+UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS NULL;
 ```
+
+## 方法二：分步执行（如果一次性执行失败）
+
+## 基础表结构：
+
+### 1. 设置表
+```sql
 CREATE TABLE settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
 ```
-```
+
+### 2. 分类表
+```sql
 CREATE TABLE categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar'))
+  type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar')),
+  displayOrder INTEGER
 );
 ```
-```
+
+### 3. 网站表
+```sql
 CREATE TABLE sites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   categoryId INTEGER NOT NULL,
@@ -81,14 +211,61 @@ CREATE TABLE sites (
   url TEXT NOT NULL,
   icon TEXT,
   description TEXT,
-  FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE 
+  visit_count INTEGER DEFAULT 0,
+  tags TEXT,
+  group_id INTEGER,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE,
+  FOREIGN KEY (group_id) REFERENCES site_groups(id)
 );
 ```
+
+### 4. 网站访问统计表
+```sql
+CREATE TABLE IF NOT EXISTS site_visits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  site_id INTEGER NOT NULL,
+  visit_count INTEGER DEFAULT 0,
+  last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+);
 ```
+
+### 5. 网站分组表
+```sql
+CREATE TABLE IF NOT EXISTS site_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  color TEXT,
+  icon TEXT,
+  display_order INTEGER DEFAULT 0
+);
+```
+
+### 6. 用户偏好设置表
+```sql
+CREATE TABLE IF NOT EXISTS user_preferences (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+```
+
+### 7. 初始化默认数据
+```sql
 INSERT INTO settings (key, value) VALUES ('backgroundUrl', 'https://iili.io/FSa7FDB.gif');
+
+INSERT OR IGNORE INTO user_preferences (key, value) VALUES 
+  ('show_frequent_sites', 'true'),
+  ('frequent_sites_count', '8'),
+  ('enable_shortcuts', 'true'),
+  ('enable_pinyin_search', 'true');
 ```
-```
-ALTER TABLE categories ADD COLUMN displayOrder INTEGER;
+
+### 8. 更新现有数据（如果是升级）
+```sql
+UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS NULL;
 ```
 
 2.fork项目，到cloudflare创建pages连接Git仓库，选择构建目录`public`，点击部署。

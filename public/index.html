@@ -68,6 +68,29 @@
         .drag-handle:active { cursor: grabbing; }
         .light-mode .sortable-ghost { background: #cbd5e1; }
         .light-mode .sortable-chosen { background: #e5e7eb; }
+        
+        /* Category management styles */
+        .category-type-select {
+            transition: all 0.2s ease;
+        }
+        .category-type-select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+        }
+        
+        .category-item-wrapper {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .category-item-wrapper.sidebar-type {
+            border-left-color: #3b82f6;
+        }
+        
+        .category-item-wrapper.topbar-type {
+            border-left-color: #10b981;
+        }
 
         /* --- Music Capsule Styles --- */
         .music-capsule {
@@ -274,6 +297,412 @@
         /* --- End of Music Capsule Styles --- */
 
         #app-container.sidebar-collapsed #sidebar { width: 0; padding-left: 0; padding-right: 0; overflow: hidden; transform: translateX(-100%); }
+        
+        /* --- Frequent Sites Styles --- */
+        .frequent-sites-section {
+            padding: 20px 0;
+            margin-bottom: 24px;
+        }
+        
+        .frequent-sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+        }
+        
+        @media (min-width: 640px) {
+            .frequent-sites-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
+        
+        .frequent-site-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .frequent-site-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .frequent-site-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            object-fit: contain;
+        }
+        
+        .frequent-site-name {
+            font-size: 12px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+        
+        /* --- Shortcut Key Styles --- */
+        .shortcut-hint {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .frequent-site-item:hover .shortcut-hint {
+            opacity: 1;
+        }
+        
+        /* --- Import/Export Modal Styles --- */
+        .import-export-section {
+            background: var(--panel-bg, #f9fafb);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        /* --- Site Tags Styles --- */
+        .site-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        
+        .site-tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--text-color);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        /* --- Enhanced Admin Styles --- */
+        .site-group-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .group-color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid var(--ui-border);
+        }
+        
+        /* --- Web Search Styles --- */
+        .centered-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        
+        .content-wrapper {
+            width: 100%;
+        }
+        
+        #web-search-section {
+            margin-bottom: 32px;
+        }
+        
+        .web-search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+        }
+        
+        .search-engine-dropdown {
+            position: relative;
+        }
+        
+        .search-engine-toggle {
+            height: 52px;
+            padding: 0 16px;
+            background: var(--input-bg, rgba(31, 41, 55, 1));
+            border: 2px solid transparent;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        
+        .engine-name {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .search-engine-toggle:hover {
+            background: var(--hover-bg, rgba(31, 41, 55, 0.8));
+        }
+        
+        .search-engine-toggle img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+        
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+        
+        .search-engine-toggle.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .search-engine-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: var(--modal-bg, #1f2937);
+            border: 1px solid var(--ui-border);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            min-width: 180px;
+        }
+        
+        .search-engine-option {
+            width: 100%;
+            padding: 10px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+            text-align: left;
+        }
+        
+        .search-engine-option:hover {
+            background: var(--hover-bg, rgba(255, 255, 255, 0.1));
+        }
+        
+        .search-engine-option img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        
+        .search-engine-option span {
+            font-size: 14px;
+        }
+        
+        .web-search-form {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .web-search-input {
+            width: 100%;
+            background: var(--input-bg, rgba(31, 41, 55, 1));
+            border: 2px solid transparent;
+            border-left: none;
+            border-radius: 0;
+            padding: 14px 52px 14px 20px;
+            font-size: 16px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .web-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+        
+        .search-engine-toggle:has(+ .web-search-form .web-search-input:focus) {
+            border-color: #3b82f6;
+            border-right-color: transparent;
+        }
+        
+        .web-search-submit {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 0 12px 12px 0;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .web-search-submit:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+        
+        .web-search-submit:active {
+            transform: scale(0.95);
+        }
+        
+        .web-search-submit svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
+        }
+        
+        /* Light mode adjustments */
+        .light-mode .web-search-input,
+        .light-mode .search-engine-toggle {
+            background: var(--input-bg, #e5e7eb);
+            color: var(--input-text, #111827);
+        }
+        
+        .light-mode .search-engine-menu {
+            background: var(--modal-bg, #ffffff);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+            @media (max-width: 640px) {
+                .centered-content {
+                    max-height: 85vh;
+                    padding: 15px 0;
+                }
+                
+                #web-search-section {
+                    margin-bottom: 24px;
+                }
+                
+                .web-search-container {
+                    gap: 0;
+                }
+                
+                .search-engine-toggle {
+                    height: 44px;
+                    padding: 0 12px;
+                    min-width: 120px;
+                }
+                
+                .search-engine-toggle img {
+                    width: 20px;
+                    height: 20px;
+                }
+                
+                .engine-name {
+                    font-size: 13px;
+                }
+                
+                .web-search-input {
+                    font-size: 14px;
+                    padding: 12px 44px 12px 16px;
+                }
+                
+                .web-search-submit {
+                    width: 44px;
+                    height: 44px;
+                }
+                
+                .web-search-submit svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        
+        /* --- Site Management Styles --- */
+        .sites-category-section {
+            background: var(--panel-bg, #1f2937);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .sites-category-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sites-sortable-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .site-admin-item {
+            background: var(--ui-bg, rgba(55, 65, 81, 1));
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .site-admin-item:hover {
+            background: var(--hover-bg, rgba(75, 85, 99, 1));
+        }
+        
+        .site-admin-item.sortable-ghost {
+            opacity: 0.4;
+        }
+        
+        .site-admin-item.sortable-chosen {
+            background: var(--hover-bg, rgba(75, 85, 99, 1));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-sites-order-btn {
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .save-sites-order-btn:hover {
+            background: rgba(139, 92, 246, 1);
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
@@ -286,7 +715,7 @@
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-black bg-opacity-10 backdrop-blur-md shadow-lg p-4 flex items-center justify-between">
+            <header class="bg-black bg-opacity-10 backdrop-blur-md shadow-lg p-4 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center">
                     <button id="mobile-menu-toggle" class="md:hidden mr-4 p-2 rounded-md hover:bg-gray-700"><i data-lucide="menu"></i></button>
                     <button id="desktop-sidebar-toggle" class="hidden md:flex mr-4 p-2 rounded-md hover:bg-gray-700">
@@ -308,7 +737,58 @@
                     <button id="admin-login-btn" class="p-2 rounded-md hover:bg-gray-700"><i data-lucide="settings"></i></button>
                 </div>
             </header>
-            <div id="content-grid" class="flex-1 p-8 overflow-y-auto"></div>
+            <div id="content-area" class="flex-1 overflow-y-auto relative">
+                <div class="centered-content">
+                    <div class="content-wrapper w-full max-w-7xl mx-auto px-8">
+                        <!-- Web Search Section -->
+                        <div id="web-search-section" class="mb-6">
+                            <div class="web-search-container">
+                                <div class="search-engine-dropdown">
+                                    <button id="search-engine-toggle" class="search-engine-toggle">
+                                        <img id="current-engine-icon" src="https://www.google.com/favicon.ico" alt="Search Engine" />
+                                        <span id="current-engine-name" class="engine-name">Google</span>
+                                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                                    </button>
+                                    <div id="search-engine-menu" class="search-engine-menu hidden">
+                                        <button class="search-engine-option" data-engine="google">
+                                            <img src="https://www.google.com/favicon.ico" alt="Google" />
+                                            <span>Google</span>
+                                        </button>
+                                        <button class="search-engine-option" data-engine="baidu">
+                                            <img src="https://www.baidu.com/favicon.ico" alt="百度" />
+                                            <span>百度</span>
+                                        </button>
+                                        <button class="search-engine-option" data-engine="bing">
+                                            <img src="https://www.bing.com/favicon.ico" alt="Bing" />
+                                            <span>Bing</span>
+                                        </button>
+                                        <button class="search-engine-option" data-engine="duckduckgo">
+                                            <img src="https://duckduckgo.com/favicon.ico" alt="DuckDuckGo" />
+                                            <span>DuckDuckGo</span>
+                                        </button>
+                                        <button class="search-engine-option" data-engine="yandex">
+                                            <img src="https://yandex.com/favicon.ico" alt="Yandex" />
+                                            <span>Yandex</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <form id="web-search-form" class="web-search-form">
+                                    <input type="text" id="web-search-input" placeholder="搜索互联网..." 
+                                           class="web-search-input" data-i18n-key="webSearchPlaceholder">
+                                    <button type="submit" class="web-search-submit">
+                                        <i data-lucide="search"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="frequent-sites" class="frequent-sites-section hidden">
+                            <h2 class="text-xl font-bold mb-4" data-i18n-key="frequentSites">常用网站</h2>
+                            <div id="frequent-sites-grid" class="frequent-sites-grid"></div>
+                        </div>
+                        <div id="content-grid"></div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -338,9 +818,24 @@
             <div class="flex-grow overflow-y-auto pr-4">
                 <div class="bg-gray-900 p-6 rounded-lg mb-6">
                     <h3 class="text-xl font-semibold mb-4" data-i18n-key="globalSettings">全局设置</h3>
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
                         <input type="text" id="background-url-input" data-i18n-key="backgroundPlaceholder" placeholder="输入背景图片 URL" class="w-full flex-grow bg-gray-700 border border-gray-600 rounded-md p-2">
                         <button id="save-background-btn" class="w-full sm:w-auto flex-shrink-0 bg-green-600 hover:bg-green-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="saveBackground">保存背景</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <label class="text-sm font-medium" data-i18n-key="frequentSitesCount">常用网站显示数量：</label>
+                        <select id="frequent-sites-count-select" class="bg-gray-700 border border-gray-600 rounded-md p-2">
+                            <option value="4">4</option>
+                            <option value="6">6</option>
+                            <option value="8" selected>8</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                            <option value="16">16</option>
+                            <option value="20">20</option>
+                            <option value="24">24</option>
+                            <option value="0" data-i18n-key="hideFrequentSites">隐藏常用网站</option>
+                        </select>
+                        <button id="save-preferences-btn" class="bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="saveSettings">保存设置</button>
                     </div>
                 </div>
                 <div class="bg-gray-900 p-6 rounded-lg mb-6">
@@ -348,6 +843,7 @@
                         <h3 class="text-xl font-semibold" data-i18n-key="categoryManagement">分类管理</h3>
                         <button id="save-order-btn" class="bg-purple-600 hover:bg-purple-700 rounded-md py-1 px-3 text-sm font-semibold hidden" data-i18n-key="saveOrder">保存顺序</button>
                     </div>
+                    <p class="text-sm text-gray-400 mb-4" data-i18n-key="categoryTip">拖拽调整顺序，下拉框切换栏位</p>
                     <form id="add-category-form" class="flex flex-col sm:flex-row gap-2 mb-4">
                         <input type="text" id="category-name-input" data-i18n-key="newCategoryPlaceholder" placeholder="新分类名称" class="w-full flex-grow bg-gray-700 border border-gray-600 rounded-md p-2" required>
                         <select id="category-type-select" class="w-full sm:w-auto bg-gray-700 border border-gray-600 rounded-md p-2">
@@ -357,6 +853,16 @@
                         <button type="submit" class="w-full sm:w-auto flex-shrink-0 bg-blue-600 hover:bg-blue-700 p-2 rounded-md"><i data-lucide="plus"></i></button>
                     </form>
                     <div id="categories-list" class="space-y-2"></div>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4" data-i18n-key="importExport">导入导出</h3>
+                    <div class="import-export-section">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button id="export-data-btn" class="flex-1 bg-green-600 hover:bg-green-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="exportData">导出数据</button>
+                            <input type="file" id="import-file-input" accept=".json" class="hidden">
+                            <button id="import-data-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="importData">导入数据</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="bg-gray-900 p-6 rounded-lg">
                     <h3 id="site-form-title" class="text-xl font-semibold mb-4" data-i18n-key="siteManagement">网站管理</h3>
@@ -368,7 +874,11 @@
                            <input type="text" id="site-icon-input" data-i18n-key="iconUrlPlaceholder" placeholder="图标 URL (可选)" class="flex-grow bg-gray-700 rounded-md p-2">
                            <img id="icon-preview" src="https://placehold.co/32x32/777/eee?text=?" alt="Icon Preview" class="icon-preview">
                         </div>
-                        <textarea id="site-desc-input" data-i18n-key="siteDescPlaceholder" placeholder="网站简介" class="bg-gray-700 rounded-md p-2 md:col-span-2 lg:col-span-3" rows="2"></textarea>
+                        <input type="text" id="site-tags-input" data-i18n-key="tagsPlaceholder" placeholder="标签 (用逗号分隔)" class="bg-gray-700 rounded-md p-2">
+                        <select id="site-group-select" class="bg-gray-700 border border-gray-600 rounded-md p-2">
+                            <option value="" data-i18n-key="selectGroup">选择分组 (可选)</option>
+                        </select>
+                        <textarea id="site-desc-input" data-i18n-key="siteDescPlaceholder" placeholder="网站简介" class="bg-gray-700 rounded-md p-2 md:col-span-2" rows="2"></textarea>
                         <div class="flex items-center gap-2 md:col-start-4">
                             <button type="button" id="cancel-edit-btn" class="w-full bg-gray-600 hover:bg-gray-700 rounded-md py-2 px-4 font-semibold hidden" data-i18n-key="cancel">取消</button>
                             <button type="submit" id="site-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-4 font-semibold" data-i18n-key="addSite">添加网站</button>
@@ -437,10 +947,12 @@
         // --- i18n Translations ---
         const translations = {
             en: {
-                navMenu: "Navigation Menu", searchPlaceholder: "Search sites...", adminLogin: "Admin Login", passwordPlaceholder: "Enter admin password", login: "Login", adminPanel: "Admin Panel", globalSettings: "Global Settings", backgroundPlaceholder: "Enter background image URL", saveBackground: "Save Background", categoryManagement: "Category Management", newCategoryPlaceholder: "New category name", sidebar: "Sidebar", topbar: "Topbar", siteManagement: "Site Management", selectCategory: "Select a category", siteNamePlaceholder: "Site Name", siteUrlPlaceholder: "Site URL", iconUrlPlaceholder: "Icon URL (optional)", siteDescPlaceholder: "Site Description", addSite: "Add Site", allSites: "All Sites", noSitesFound: "No sites found.", passwordIncorrect: "Incorrect password, please try again.", backgroundSaved: "Background saved successfully!", backgroundSaveFailed: "Failed to save background.", fillRequiredFields: "Please fill in all required fields.", confirmCategoryDeletion: "Are you sure you want to delete this category? All associated sites will also be deleted.", confirmSiteDeletion: "Are you sure you want to delete this site?", dataLoadFailed: "Failed to load data. Please check the browser console (F12) for more details and ensure the backend API is running correctly.", modalOk: "OK", modalCancel: "Cancel", modalConfirm: "Confirm", saveOrder: "Save Order", orderSaved: "Order saved successfully!", editSite: "Edit Site", saveChanges: "Save Changes", siteUpdated: "Site updated successfully!", noAudioFile: "Please add an audio file to the playlist first.", loadingPlaylists: "Loading playlists...", gettingAudioUrl: "Getting audio URL...", getUrlFailed: "Failed to get audio URL", noAvailableSongs: "No available songs", checkApiConfig: "Please check API or playlist config"
+                navMenu: "Navigation Menu", searchPlaceholder: "Search sites...", adminLogin: "Admin Login", passwordPlaceholder: "Enter admin password", login: "Login", adminPanel: "Admin Panel", globalSettings: "Global Settings", backgroundPlaceholder: "Enter background image URL", saveBackground: "Save Background", categoryManagement: "Category Management", newCategoryPlaceholder: "New category name", sidebar: "Sidebar", topbar: "Topbar", siteManagement: "Site Management", selectCategory: "Select a category", siteNamePlaceholder: "Site Name", siteUrlPlaceholder: "Site URL", iconUrlPlaceholder: "Icon URL (optional)", siteDescPlaceholder: "Site Description", addSite: "Add Site", allSites: "All Sites", noSitesFound: "No sites found.", passwordIncorrect: "Incorrect password, please try again.", backgroundSaved: "Background saved successfully!", backgroundSaveFailed: "Failed to save background.", fillRequiredFields: "Please fill in all required fields.", confirmCategoryDeletion: "Are you sure you want to delete this category? All associated sites will also be deleted.", confirmSiteDeletion: "Are you sure you want to delete this site?", dataLoadFailed: "Failed to load data. Please check the browser console (F12) for more details and ensure the backend API is running correctly.", modalOk: "OK", modalCancel: "Cancel", modalConfirm: "Confirm", saveOrder: "Save Order", orderSaved: "Order saved successfully!", editSite: "Edit Site", saveChanges: "Save Changes", siteUpdated: "Site updated successfully!", noAudioFile: "Please add an audio file to the playlist first.", loadingPlaylists: "Loading playlists...", gettingAudioUrl: "Getting audio URL...", getUrlFailed: "Failed to get audio URL", noAvailableSongs: "No available songs", checkApiConfig: "Please check API or playlist config",
+                frequentSites: "Frequent Sites", tagsPlaceholder: "Tags (comma separated)", selectGroup: "Select Group (optional)", importExport: "Import/Export", exportData: "Export Data", importData: "Import Data", importSuccess: "Data imported successfully!", importFailed: "Import failed. Please check the file format.", visitCount: "visits", saveSitesOrder: "Save Sites Order", sitesOrderSaved: "Sites order saved successfully!", categoryTip: "Drag to reorder, change type with dropdown", frequentSitesCount: "Frequent Sites Count:", hideFrequentSites: "Hide Frequent Sites", saveSettings: "Save Settings", webSearchPlaceholder: "Search the web..."
             },
             zh: {
-                navMenu: "导航菜单", searchPlaceholder: "搜索网站...", adminLogin: "管理员登录", passwordPlaceholder: "请输入管理密码", login: "登录", adminPanel: "管理面板", globalSettings: "全局设置", backgroundPlaceholder: "输入背景图片 URL", saveBackground: "保存背景", categoryManagement: "分类管理", newCategoryPlaceholder: "新分类名称", sidebar: "侧边栏", topbar: "顶部栏", siteManagement: "网站管理", selectCategory: "选择一个分类", siteNamePlaceholder: "网站名称", siteUrlPlaceholder: "网站 URL", iconUrlPlaceholder: "图标 URL (可选)", siteDescPlaceholder: "网站简介", addSite: "添加网站", allSites: "所有网站", noSitesFound: "没有找到网站。", passwordIncorrect: "密码错误，请重试。", backgroundSaved: "背景已保存！", backgroundSaveFailed: "背景保存失败。", fillRequiredFields: "请填写所有必填字段。", confirmCategoryDeletion: "确定要删除这个分类吗？其下的所有网站也会被一并删除。", confirmSiteDeletion: "确定要删除这个网站吗？", dataLoadFailed: "数据加载失败。请按 F12 查看浏览器控制台获取更多信息，并确保后端 API 运行正常。", modalOk: "好的", modalCancel: "取消", modalConfirm: "确定", saveOrder: "保存顺序", orderSaved: "顺序已保存！", editSite: "编辑网站", saveChanges: "保存更改", siteUpdated: "网站已成功更新！", noAudioFile: "请先添加音频文件到播放列表", loadingPlaylists: "正在加载歌单...", gettingAudioUrl: "正在获取音频链接...", getUrlFailed: "获取音频链接失败", noAvailableSongs: "无可用歌曲", checkApiConfig: "请检查API或歌单配置"
+                navMenu: "导航菜单", searchPlaceholder: "搜索网站...", adminLogin: "管理员登录", passwordPlaceholder: "请输入管理密码", login: "登录", adminPanel: "管理面板", globalSettings: "全局设置", backgroundPlaceholder: "输入背景图片 URL", saveBackground: "保存背景", categoryManagement: "分类管理", newCategoryPlaceholder: "新分类名称", sidebar: "侧边栏", topbar: "顶部栏", siteManagement: "网站管理", selectCategory: "选择一个分类", siteNamePlaceholder: "网站名称", siteUrlPlaceholder: "网站 URL", iconUrlPlaceholder: "图标 URL (可选)", siteDescPlaceholder: "网站简介", addSite: "添加网站", allSites: "所有网站", noSitesFound: "没有找到网站。", passwordIncorrect: "密码错误，请重试。", backgroundSaved: "背景已保存！", backgroundSaveFailed: "背景保存失败。", fillRequiredFields: "请填写所有必填字段。", confirmCategoryDeletion: "确定要删除这个分类吗？其下的所有网站也会被一并删除。", confirmSiteDeletion: "确定要删除这个网站吗？", dataLoadFailed: "数据加载失败。请按 F12 查看浏览器控制台获取更多信息，并确保后端 API 运行正常。", modalOk: "好的", modalCancel: "取消", modalConfirm: "确定", saveOrder: "保存顺序", orderSaved: "顺序已保存！", editSite: "编辑网站", saveChanges: "保存更改", siteUpdated: "网站已成功更新！", noAudioFile: "请先添加音频文件到播放列表", loadingPlaylists: "正在加载歌单...", gettingAudioUrl: "正在获取音频链接...", getUrlFailed: "获取音频链接失败", noAvailableSongs: "无可用歌曲", checkApiConfig: "请检查API或歌单配置",
+                frequentSites: "常用网站", tagsPlaceholder: "标签 (用逗号分隔)", selectGroup: "选择分组 (可选)", importExport: "导入导出", exportData: "导出数据", importData: "导入数据", importSuccess: "数据导入成功！", importFailed: "导入失败，请检查文件格式。", visitCount: "次访问", saveSitesOrder: "保存网站顺序", sitesOrderSaved: "网站顺序已保存！", categoryTip: "拖拽调整顺序，下拉框切换栏位", frequentSitesCount: "常用网站显示数量：", hideFrequentSites: "隐藏常用网站", saveSettings: "保存设置", webSearchPlaceholder: "搜索互联网..."
             }
         };
 
@@ -453,7 +965,38 @@
         ];
 
         let state = {
-            categories: [], sites: [], selectedCategory: 'all', isLoggedIn: false, currentLanguage: 'zh', currentTheme: 'dark', editingSiteId: null, isSakuraEnabled: true
+            categories: [], sites: [], selectedCategory: 'all', isLoggedIn: false, currentLanguage: 'zh', currentTheme: 'dark', editingSiteId: null, isSakuraEnabled: true,
+            frequentSites: [], showFrequentSites: true, siteGroups: [], userPreferences: {},
+            currentSearchEngine: 'google'
+        };
+        
+        // Search engine configurations
+        const searchEngines = {
+            google: {
+                name: 'Google',
+                url: 'https://www.google.com/search?q=',
+                icon: 'https://www.google.com/favicon.ico'
+            },
+            baidu: {
+                name: '百度',
+                url: 'https://www.baidu.com/s?wd=',
+                icon: 'https://www.baidu.com/favicon.ico'
+            },
+            bing: {
+                name: 'Bing',
+                url: 'https://www.bing.com/search?q=',
+                icon: 'https://www.bing.com/favicon.ico'
+            },
+            duckduckgo: {
+                name: 'DuckDuckGo',
+                url: 'https://duckduckgo.com/?q=',
+                icon: 'https://duckduckgo.com/favicon.ico'
+            },
+            yandex: {
+                name: 'Yandex',
+                url: 'https://yandex.com/search/?text=',
+                icon: 'https://yandex.com/favicon.ico'
+            }
         };
 
         // --- DOM Elements Cache ---
@@ -495,6 +1038,15 @@
             cancelEditBtn: document.getElementById('cancel-edit-btn'),
             sitesListAdmin: document.getElementById('sites-list-admin'),
             iconPreview: document.getElementById('icon-preview'),
+            siteTagsInput: document.getElementById('site-tags-input'),
+            siteGroupSelect: document.getElementById('site-group-select'),
+            exportDataBtn: document.getElementById('export-data-btn'),
+            importDataBtn: document.getElementById('import-data-btn'),
+            importFileInput: document.getElementById('import-file-input'),
+            frequentSitesSection: document.getElementById('frequent-sites'),
+            frequentSitesGrid: document.getElementById('frequent-sites-grid'),
+            frequentSitesCountSelect: document.getElementById('frequent-sites-count-select'),
+            savePreferencesBtn: document.getElementById('save-preferences-btn'),
             mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
             desktopSidebarToggle: document.getElementById('desktop-sidebar-toggle'),
             desktopSidebarIcon: document.getElementById('desktop-sidebar-icon'),
@@ -504,6 +1056,12 @@
             genericModal: document.getElementById('generic-modal'),
             genericModalText: document.getElementById('generic-modal-text'),
             genericModalButtons: document.getElementById('generic-modal-buttons'),
+            webSearchForm: document.getElementById('web-search-form'),
+            webSearchInput: document.getElementById('web-search-input'),
+            searchEngineToggle: document.getElementById('search-engine-toggle'),
+            searchEngineMenu: document.getElementById('search-engine-menu'),
+            currentEngineIcon: document.getElementById('current-engine-icon'),
+            currentEngineName: document.getElementById('current-engine-name')
         };
 
         // --- Music Capsule Class (Final Version) ---
@@ -909,6 +1467,112 @@
             DOMElements.cancelEditBtn.classList.add('hidden');
             setLanguage(state.currentLanguage);
         }
+        
+        // Import/Export functions
+        function exportData() {
+            const data = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                categories: state.categories,
+                sites: state.sites,
+                siteGroups: state.siteGroups,
+                userPreferences: state.userPreferences
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nav-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        async function importData(file) {
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                
+                if (!data.version || !data.categories || !data.sites) {
+                    throw new Error('Invalid data format');
+                }
+                
+                // Import data via API
+                await api.post('import', data);
+                customAlert('importSuccess');
+                await loadInitialData();
+            } catch (err) {
+                console.error('Import failed:', err);
+                customAlert('importFailed');
+            }
+        }
+
+        // --- Helper Functions ---
+        // Pinyin support for search
+        async function loadPinyinLibrary() {
+            if (window.pinyinPro) return;
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.2/dist/index.js';
+            document.head.appendChild(script);
+            return new Promise((resolve) => {
+                script.onload = resolve;
+            });
+        }
+        
+        function matchesPinyin(text, searchTerm) {
+            if (!window.pinyinPro || !state.userPreferences.enable_pinyin_search) return false;
+            const pinyin = window.pinyinPro.pinyin(text, { toneType: 'none', type: 'array' }).join('');
+            const pinyinInitials = window.pinyinPro.pinyin(text, { pattern: 'initial', toneType: 'none', type: 'array' }).join('');
+            return pinyin.toLowerCase().includes(searchTerm) || pinyinInitials.toLowerCase().includes(searchTerm);
+        }
+        
+        // Record site visit
+        async function recordSiteVisit(siteId) {
+            try {
+                await api.post(`sites/${siteId}/visit`, {});
+            } catch (err) {
+                console.error('Failed to record visit:', err);
+            }
+        }
+        
+        // Render frequent sites
+        function renderFrequentSites() {
+            const frequentSitesCount = parseInt(state.userPreferences.frequent_sites_count) || 8;
+            
+            if (!state.showFrequentSites || state.frequentSites.length === 0 || frequentSitesCount === 0) {
+                DOMElements.frequentSitesSection.classList.add('hidden');
+                return;
+            }
+            
+            DOMElements.frequentSitesSection.classList.remove('hidden');
+            DOMElements.frequentSitesGrid.innerHTML = '';
+            
+            const maxFrequentSites = parseInt(state.userPreferences.frequent_sites_count) || 8;
+            state.frequentSites.slice(0, maxFrequentSites).forEach((site, index) => {
+                const item = document.createElement('a');
+                item.href = site.url;
+                item.target = '_blank';
+                item.rel = 'noopener noreferrer';
+                item.className = 'frequent-site-item';
+                item.onclick = (e) => {
+                    e.preventDefault();
+                    recordSiteVisit(site.id);
+                    window.open(site.url, '_blank');
+                };
+                
+                const iconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=64`;
+                const shortcutKey = index < 9 ? index + 1 : null;
+                
+                item.innerHTML = `
+                    ${shortcutKey ? `<span class="shortcut-hint">${shortcutKey}</span>` : ''}
+                    <img src="${iconUrl}" alt="${site.name}" class="frequent-site-icon" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/48x48/777/eee?text=${site.name.charAt(0)}'">
+                    <span class="frequent-site-name">${site.name}</span>
+                `;
+                
+                DOMElements.frequentSitesGrid.appendChild(item);
+            });
+        }
 
         // --- Rendering Functions ---
         function renderCategories() {
@@ -942,6 +1606,12 @@
                 return;
             }
             const sitesByCat = sitesToRender.reduce((acc, site) => { (acc[site.categoryId] = acc[site.categoryId] || []).push(site); return acc; }, {});
+            
+            // 按display_order排序每个分类中的网站
+            Object.keys(sitesByCat).forEach(catId => {
+                sitesByCat[catId].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+            });
+            
             const categoryOrder = state.categories.map(c => c.id);
             categoryOrder.forEach(catId => {
                 const category = state.categories.find(c => c.id == catId);
@@ -958,8 +1628,21 @@
                     card.target = '_blank';
                     card.rel = 'noopener noreferrer';
                     card.className = 'bg-black bg-opacity-20 backdrop-blur-md rounded-lg p-3 flex flex-col items-center text-center hover:bg-opacity-60 transform hover:-translate-y-1 transition-all';
+                    card.onclick = (e) => {
+                        e.preventDefault();
+                        recordSiteVisit(site.id);
+                        window.open(site.url, '_blank');
+                    };
                     const iconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=64`;
-                    card.innerHTML = `<img src="${iconUrl}" alt="${site.name}" class="w-16 h-16 mb-4 rounded-lg object-contain" onerror="this.onerror=null;this.src='https://placehold.co/64x64/777/eee?text=${site.name.charAt(0)}';"><h3 class="font-semibold text-lg mb-1 truncate w-full">${site.name}</h3><p class="text-gray-400 text-sm flex-grow">${site.description || '&nbsp;'}</p>`;
+                    const tagsHtml = site.tags ? `<div class="site-tags">${site.tags.split(',').map(tag => 
+                        `<span class="site-tag">${tag.trim()}</span>`).join('')}</div>` : '';
+                    card.innerHTML = `
+                        <img src="${iconUrl}" alt="${site.name}" class="w-16 h-16 mb-4 rounded-lg object-contain" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/64x64/777/eee?text=${site.name.charAt(0)}'">
+                        <h3 class="font-semibold text-lg mb-1 truncate w-full">${site.name}</h3>
+                        <p class="text-gray-400 text-sm flex-grow">${site.description || '&nbsp;'}</p>
+                        ${tagsHtml}
+                    `;
                     grid.appendChild(card);
                 });
                 DOMElements.contentGrid.appendChild(grid);
@@ -970,56 +1653,137 @@
             if (!state.isLoggedIn) return;
 
             DOMElements.categoriesList.innerHTML = '';
-            const sidebarCats = state.categories.filter(c => c.type === 'sidebar');
-            const topbarCats = state.categories.filter(c => c.type === 'topbar');
+            
+            // 创建统一的分类列表
+            const allCategoriesContainer = document.createElement('div');
+            allCategoriesContainer.id = 'sortable-categories';
+            allCategoriesContainer.className = 'space-y-2';
+            
+            // 按显示顺序排序所有分类
+            const sortedCategories = [...state.categories].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+            
+            sortedCategories.forEach(cat => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-gray-700 p-3 rounded-md';
+                div.dataset.id = cat.id;
+                div.dataset.type = cat.type;
+                
+                const typeColor = cat.type === 'sidebar' ? 'bg-blue-600' : 'bg-green-600';
+                const typeText = translations[state.currentLanguage][cat.type] || cat.type;
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="grip-vertical" class="drag-handle text-gray-500 cursor-move"></i>
+                        <span class="font-medium">${cat.name}</span>
+                        <span class="text-xs px-2 py-1 rounded-full ${typeColor} text-white">${typeText}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select data-category-id="${cat.id}" class="category-type-select bg-gray-600 text-sm rounded px-2 py-1">
+                            <option value="sidebar" ${cat.type === 'sidebar' ? 'selected' : ''}>${translations[state.currentLanguage].sidebar}</option>
+                            <option value="topbar" ${cat.type === 'topbar' ? 'selected' : ''}>${translations[state.currentLanguage].topbar}</option>
+                        </select>
+                        <button data-id="${cat.id}" class="delete-category-btn p-1 text-red-500 hover:text-red-400">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                allCategoriesContainer.appendChild(div);
+            });
+            
+            DOMElements.categoriesList.appendChild(allCategoriesContainer);
+            
+            // 创建统一的 Sortable 实例
+            new Sortable(allCategoriesContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                handle: '.drag-handle',
+                onUpdate: () => DOMElements.saveOrderBtn.classList.remove('hidden')
+            });
 
-            const createSortableList = (titleKey, cats) => {
-                if (cats.length > 0) {
-                    const titleEl = document.createElement('h4');
-                    titleEl.className = "text-sm font-bold mt-4 mb-2 text-gray-400";
-                    titleEl.setAttribute('data-i18n-key', titleKey);
-                    titleEl.textContent = translations[state.currentLanguage][titleKey];
-                    DOMElements.categoriesList.appendChild(titleEl);
+            // 渲染网站列表，按分类分组并支持拖拽排序
+            DOMElements.sitesListAdmin.innerHTML = '';
+            
+            // 按分类对网站进行分组
+            const sitesByCategory = {};
+            state.sites.forEach(site => {
+                if (!sitesByCategory[site.categoryId]) {
+                    sitesByCategory[site.categoryId] = [];
                 }
-
-                const listContainer = document.createElement('div');
-                listContainer.id = `sortable-${titleKey}`;
-                listContainer.className = "space-y-2";
-                DOMElements.categoriesList.appendChild(listContainer);
-
-                cats.forEach(cat => {
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between bg-gray-700 p-2 rounded-md';
-                    div.dataset.id = cat.id;
-                    div.innerHTML = `
-                        <div class="flex items-center">
-                            <i data-lucide="grip-vertical" class="drag-handle mr-2 text-gray-500"></i>
-                            <span>${cat.name}</span>
+                sitesByCategory[site.categoryId].push(site);
+            });
+            
+            // 按display_order排序
+            Object.keys(sitesByCategory).forEach(catId => {
+                sitesByCategory[catId].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+            });
+            
+            // 为每个分类创建一个区域
+            state.categories.forEach(category => {
+                const sites = sitesByCategory[category.id];
+                if (!sites || sites.length === 0) return;
+                
+                const section = document.createElement('div');
+                section.className = 'sites-category-section';
+                
+                const title = document.createElement('div');
+                title.className = 'sites-category-title';
+                title.innerHTML = `
+                    <span>${category.name} (${sites.length})</span>
+                    <button class="save-sites-order-btn hidden" data-category-id="${category.id}" data-i18n-key="saveSitesOrder">
+                        ${translations[state.currentLanguage].saveSitesOrder}
+                    </button>
+                `;
+                section.appendChild(title);
+                
+                const list = document.createElement('div');
+                list.className = 'sites-sortable-list';
+                list.id = `sites-sortable-${category.id}`;
+                
+                sites.forEach(site => {
+                    const item = document.createElement('div');
+                    item.className = 'site-admin-item';
+                    item.dataset.siteId = site.id;
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="grip-vertical" class="drag-handle text-gray-500"></i>
+                            <img src="${site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=32`}" 
+                                 class="w-8 h-8 rounded object-contain" 
+                                 onerror="this.onerror=null;this.src='https://placehold.co/32x32/777/eee?text=${site.name.charAt(0)}'">
+                            <div>
+                                <p class="font-semibold">${site.name}</p>
+                                <p class="text-xs text-gray-400">${site.url}</p>
+                            </div>
                         </div>
-                        <button data-id="${cat.id}" class="delete-category-btn p-1 text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex items-center gap-2">
+                            <a href="${site.url}" target="_blank" class="p-2 text-blue-400 hover:text-blue-300">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </a>
+                            <button data-id="${site.id}" class="edit-site-btn p-2 text-yellow-400 hover:text-yellow-300">
+                                <i data-lucide="file-pen-line" class="w-4 h-4"></i>
+                            </button>
+                            <button data-id="${site.id}" class="delete-site-btn p-2 text-red-500 hover:text-red-400">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     `;
-                    listContainer.appendChild(div);
+                    list.appendChild(item);
                 });
-
-                new Sortable(listContainer, {
+                
+                section.appendChild(list);
+                DOMElements.sitesListAdmin.appendChild(section);
+                
+                // 创建 Sortable 实例
+                new Sortable(list, {
                     animation: 150,
                     ghostClass: 'sortable-ghost',
                     chosenClass: 'sortable-chosen',
                     handle: '.drag-handle',
-                    onUpdate: () => DOMElements.saveOrderBtn.classList.remove('hidden')
+                    onUpdate: () => {
+                        const saveBtn = title.querySelector('.save-sites-order-btn');
+                        saveBtn.classList.remove('hidden');
+                    }
                 });
-            };
-
-            createSortableList('sidebar', sidebarCats);
-            createSortableList('topbar', topbarCats);
-
-            DOMElements.sitesListAdmin.innerHTML = '';
-            state.sites.forEach(site => {
-                const cat = state.categories.find(c => c.id == site.categoryId);
-                const div = document.createElement('div');
-                div.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between flex-wrap gap-2';
-                div.innerHTML = `<div class="flex items-center gap-3"><img src="${site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=32`}" class="w-8 h-8 rounded object-contain" onerror="this.onerror=null;this.src='https://placehold.co/32x32/777/eee?text=${site.name.charAt(0)}';"><div><p class="font-semibold">${site.name}</p><p class="text-xs text-gray-400">${cat ? cat.name : 'N/A'}</p></div></div><div class="flex items-center gap-2"><a href="${site.url}" target="_blank" class="p-2 text-blue-400 hover:text-blue-300"><i data-lucide="external-link" class="w-4 h-4"></i></a><button data-id="${site.id}" class="edit-site-btn p-2 text-yellow-400 hover:text-yellow-300"><i data-lucide="file-pen-line" class="w-4 h-4"></i></button><button data-id="${site.id}" class="delete-site-btn p-2 text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-                DOMElements.sitesListAdmin.appendChild(div);
             });
 
             DOMElements.siteCategorySelect.innerHTML = `<option value="" data-i18n-key="selectCategory">${translations[state.currentLanguage].selectCategory}</option>`;
@@ -1029,6 +1793,13 @@
                 opt.textContent = `${cat.name} (${translations[state.currentLanguage][cat.type] || cat.type})`;
                 DOMElements.siteCategorySelect.appendChild(opt);
             });
+            
+            // 设置当前的常用网站数量
+            if (DOMElements.frequentSitesCountSelect) {
+                const currentCount = state.userPreferences.frequent_sites_count || '8';
+                DOMElements.frequentSitesCountSelect.value = state.showFrequentSites ? currentCount : '0';
+            }
+            
             lucide.createIcons();
         }
 
@@ -1039,13 +1810,21 @@
                 filteredSites = filteredSites.filter(s => s.categoryId == state.selectedCategory);
             }
             if (term) {
-                filteredSites = filteredSites.filter(s => (s.name && s.name.toLowerCase().includes(term)) || (s.description && s.description.toLowerCase().includes(term)) || (s.url && s.url.toLowerCase().includes(term)));
+                filteredSites = filteredSites.filter(s => {
+                    const nameMatch = s.name && s.name.toLowerCase().includes(term);
+                    const descMatch = s.description && s.description.toLowerCase().includes(term);
+                    const urlMatch = s.url && s.url.toLowerCase().includes(term);
+                    const tagMatch = s.tags && s.tags.toLowerCase().includes(term);
+                    const pinyinMatch = matchesPinyin(s.name || '', term);
+                    return nameMatch || descMatch || urlMatch || tagMatch || pinyinMatch;
+                });
             }
             renderSites(filteredSites);
         }
 
         function renderAll() {
             renderCategories();
+            renderFrequentSites();
             filterAndRenderSites();
             if (state.isLoggedIn) renderAdminPanel();
         }
@@ -1077,11 +1856,39 @@
                     try { await api.post('settings', { backgroundUrl: url }); customAlert('backgroundSaved'); document.body.style.backgroundImage = `url('${url}')`; } catch (err) { customAlert('backgroundSaveFailed'); console.error(err); }
                 }
             };
+            
+            // 保存用户偏好设置
+            DOMElements.savePreferencesBtn.onclick = async () => {
+                const frequentSitesCount = DOMElements.frequentSitesCountSelect.value;
+                const preferences = {
+                    frequent_sites_count: frequentSitesCount,
+                    show_frequent_sites: frequentSitesCount !== '0' ? 'true' : 'false'
+                };
+                
+                try {
+                    await api.post('user-preferences', preferences);
+                    state.userPreferences = { ...state.userPreferences, ...preferences };
+                    state.showFrequentSites = frequentSitesCount !== '0';
+                    customAlert('saveSettings');
+                    renderFrequentSites();
+                } catch (err) {
+                    console.error('Failed to save preferences:', err);
+                    customAlert('Failed to save settings.', false);
+                }
+            };
             DOMElements.addCategoryForm.onsubmit = async (e) => { e.preventDefault(); const name = DOMElements.categoryNameInput.value.trim(); const type = DOMElements.categoryTypeSelect.value; if (name) { await api.post('categories', { name, type }); DOMElements.categoryNameInput.value = ''; loadInitialData(); } };
 
             DOMElements.siteForm.onsubmit = async (e) => {
                 e.preventDefault();
-                const site = { categoryId: DOMElements.siteCategorySelect.value, name: DOMElements.siteNameInput.value.trim(), url: DOMElements.siteUrlInput.value.trim(), icon: DOMElements.siteIconInput.value.trim(), description: DOMElements.siteDescInput.value.trim() };
+                const site = { 
+                    categoryId: DOMElements.siteCategorySelect.value, 
+                    name: DOMElements.siteNameInput.value.trim(), 
+                    url: DOMElements.siteUrlInput.value.trim(), 
+                    icon: DOMElements.siteIconInput.value.trim(), 
+                    description: DOMElements.siteDescInput.value.trim(),
+                    tags: DOMElements.siteTagsInput.value.trim(),
+                    group_id: DOMElements.siteGroupSelect.value || null
+                };
                 if (!site.categoryId || !site.name || !site.url) { customAlert('fillRequiredFields'); return; }
                 try {
                     if (state.editingSiteId) {
@@ -1118,8 +1925,10 @@
                         DOMElements.siteCategorySelect.value = siteToEdit.categoryId;
                         DOMElements.siteNameInput.value = siteToEdit.name;
                         DOMElements.siteUrlInput.value = siteToEdit.url;
-                        DOMElements.siteIconInput.value = siteToEdit.icon;
-                        DOMElements.siteDescInput.value = siteToEdit.description;
+                        DOMElements.siteIconInput.value = siteToEdit.icon || '';
+                        DOMElements.siteDescInput.value = siteToEdit.description || '';
+                        DOMElements.siteTagsInput.value = siteToEdit.tags || '';
+                        DOMElements.siteGroupSelect.value = siteToEdit.group_id || '';
                         DOMElements.iconPreview.src = siteToEdit.icon || `https://placehold.co/32x32/777/eee?text=${siteToEdit.name.charAt(0)}`;
                         DOMElements.siteFormTitle.setAttribute('data-i18n-key', 'editSite');
                         DOMElements.siteSubmitBtn.setAttribute('data-i18n-key', 'saveChanges');
@@ -1133,21 +1942,46 @@
             DOMElements.cancelEditBtn.onclick = resetSiteForm;
 
             DOMElements.saveOrderBtn.onclick = async () => {
-                const sidebarList = document.getElementById('sortable-sidebar');
-                const topbarList = document.getElementById('sortable-topbar');
-                const sidebarIds = sidebarList ? Array.from(sidebarList.children).map(el => el.dataset.id) : [];
-                const topbarIds = topbarList ? Array.from(topbarList.children).map(el => el.dataset.id) : [];
-                const orderedIds = [...sidebarIds, ...topbarIds];
+                const categoriesList = document.getElementById('sortable-categories');
+                if (!categoriesList) return;
+                
+                const updates = [];
+                Array.from(categoriesList.children).forEach((el, index) => {
+                    const categoryId = el.dataset.id;
+                    const typeSelect = el.querySelector('.category-type-select');
+                    const newType = typeSelect ? typeSelect.value : el.dataset.type;
+                    
+                    if (!categoryId) {
+                        console.error('Missing category ID for element:', el);
+                        return;
+                    }
+                    
+                    updates.push({
+                        id: parseInt(categoryId), // 确保 ID 是数字
+                        type: newType,
+                        displayOrder: index
+                    });
+                });
+                
                 try {
-                    await api.post('categories/order', { orderedIds });
+                    console.log('Saving category updates:', updates);
+                    await api.post('categories/update-all', { updates });
                     customAlert('orderSaved');
                     DOMElements.saveOrderBtn.classList.add('hidden');
                     await loadInitialData();
                 } catch (err) {
                     console.error("Failed to save order:", err);
-                    customAlert("Failed to save order.", false);
+                    console.error("Error details:", err.body || err.message);
+                    customAlert("Failed to save order. Check console for details.", false);
                 }
             };
+            
+            // 监听分类类型更改
+            document.addEventListener('change', (e) => {
+                if (e.target.classList.contains('category-type-select')) {
+                    DOMElements.saveOrderBtn.classList.remove('hidden');
+                }
+            });
             DOMElements.siteUrlInput.onblur = () => {
                 const url = DOMElements.siteUrlInput.value.trim();
                 if (url && !DOMElements.siteIconInput.value.trim()) { try { const domain = new URL(url).hostname; const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`; DOMElements.siteIconInput.value = iconUrl; DOMElements.iconPreview.src = iconUrl; } catch (e) { /* ignore invalid urls */ } }
@@ -1157,6 +1991,112 @@
             DOMElements.mobileMenuToggle.onclick = (e) => { e.stopPropagation(); toggleMobileSidebar(); };
             DOMElements.mobileSidebarClose.onclick = toggleMobileSidebar;
             DOMElements.desktopSidebarToggle.onclick = toggleDesktopSidebar;
+            
+            // Import/Export event listeners
+            DOMElements.exportDataBtn.onclick = exportData;
+            DOMElements.importDataBtn.onclick = () => DOMElements.importFileInput.click();
+            DOMElements.importFileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    await importData(file);
+                    e.target.value = '';
+                }
+            };
+            
+            // 网站顺序保存事件
+            document.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('save-sites-order-btn')) {
+                    const categoryId = e.target.dataset.categoryId;
+                    const listEl = document.getElementById(`sites-sortable-${categoryId}`);
+                    const orderedIds = Array.from(listEl.children).map(el => el.dataset.siteId);
+                    
+                    try {
+                        await api.post('sites/order', { categoryId, orderedIds });
+                        customAlert('sitesOrderSaved');
+                        e.target.classList.add('hidden');
+                    } catch (err) {
+                        console.error('Failed to save sites order:', err);
+                        customAlert('Failed to save sites order.', false);
+                    }
+                }
+            });
+            
+            // Keyboard shortcuts for frequent sites
+            document.addEventListener('keydown', (e) => {
+                if (!state.userPreferences.enable_shortcuts) return;
+                if (e.ctrlKey || e.metaKey || e.altKey) return;
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+                
+                const key = parseInt(e.key);
+                if (key >= 1 && key <= 9 && state.frequentSites[key - 1]) {
+                    e.preventDefault();
+                    const site = state.frequentSites[key - 1];
+                    recordSiteVisit(site.id);
+                    window.open(site.url, '_blank');
+                }
+            });
+            
+            // Web search functionality
+            DOMElements.webSearchForm.onsubmit = (e) => {
+                e.preventDefault();
+                const query = DOMElements.webSearchInput.value.trim();
+                if (query) {
+                    const engine = searchEngines[state.currentSearchEngine];
+                    const searchUrl = engine.url + encodeURIComponent(query);
+                    window.open(searchUrl, '_blank');
+                    DOMElements.webSearchInput.value = '';
+                }
+            };
+            
+            // Search engine dropdown toggle
+            DOMElements.searchEngineToggle.onclick = (e) => {
+                e.stopPropagation();
+                const isOpen = !DOMElements.searchEngineMenu.classList.contains('hidden');
+                DOMElements.searchEngineMenu.classList.toggle('hidden');
+                DOMElements.searchEngineToggle.classList.toggle('active');
+                
+                if (!isOpen) {
+                    // Close dropdown when clicking outside
+                    const closeDropdown = (event) => {
+                        if (!DOMElements.searchEngineToggle.contains(event.target) && 
+                            !DOMElements.searchEngineMenu.contains(event.target)) {
+                            DOMElements.searchEngineMenu.classList.add('hidden');
+                            DOMElements.searchEngineToggle.classList.remove('active');
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    };
+                    setTimeout(() => document.addEventListener('click', closeDropdown), 0);
+                }
+            };
+            
+            // Search engine selection
+            document.querySelectorAll('.search-engine-option').forEach(option => {
+                option.onclick = () => {
+                    const engine = option.dataset.engine;
+                    state.currentSearchEngine = engine;
+                    localStorage.setItem('preferredSearchEngine', engine);
+                    
+                    // Update current engine icon and name
+                    DOMElements.currentEngineIcon.src = searchEngines[engine].icon;
+                    DOMElements.currentEngineIcon.alt = searchEngines[engine].name;
+                    DOMElements.currentEngineName.textContent = searchEngines[engine].name;
+                    
+                    // Close dropdown
+                    DOMElements.searchEngineMenu.classList.add('hidden');
+                    DOMElements.searchEngineToggle.classList.remove('active');
+                    
+                    // Focus search input
+                    DOMElements.webSearchInput.focus();
+                };
+            });
+            
+            // Focus search input when pressing / key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    DOMElements.webSearchInput.focus();
+                }
+            });
         }
 
         // --- Sidebar Toggle Functions ---
@@ -1260,10 +2200,13 @@
         // --- Application Initialization ---
         async function loadInitialData() {
             try {
-                const [settings, categories, sites] = await Promise.all([
+                const [settings, categories, sites, frequentSites, siteGroups, preferences] = await Promise.all([
                     api.get('settings'),
                     api.get('categories'),
                     api.get('sites'),
+                    api.get('sites/frequent').catch(() => []),
+                    api.get('site-groups').catch(() => []),
+                    api.get('user-preferences').catch(() => ({}))
                 ]);
 
                 if (settings && settings.value) {
@@ -1275,6 +2218,10 @@
                 }
                 state.categories = categories || [];
                 state.sites = sites || [];
+                state.frequentSites = frequentSites || [];
+                state.siteGroups = siteGroups || [];
+                state.userPreferences = preferences || {};
+                state.showFrequentSites = state.userPreferences.show_frequent_sites !== 'false';
             } catch (error) {
                 console.error("Failed to load initial data:", error);
                 const errorMsg = `${translations[state.currentLanguage].dataLoadFailed} (Status: ${error.status || 'N/A'})`;
@@ -1306,11 +2253,25 @@
             
             const savedSakuraState = localStorage.getItem('sakuraEffect');
             updateSakuraState(savedSakuraState !== 'disabled');
+            
+            // Initialize search engine preference
+            const savedSearchEngine = localStorage.getItem('preferredSearchEngine');
+            if (savedSearchEngine && searchEngines[savedSearchEngine]) {
+                state.currentSearchEngine = savedSearchEngine;
+                DOMElements.currentEngineIcon.src = searchEngines[savedSearchEngine].icon;
+                DOMElements.currentEngineIcon.alt = searchEngines[savedSearchEngine].name;
+                DOMElements.currentEngineName.textContent = searchEngines[savedSearchEngine].name;
+            }
 
             initSakuraEffect();
 
             // Initialize the music capsule
             new MusicCapsule();
+            
+            // Load pinyin library for Chinese search support
+            if (state.currentLanguage === 'zh') {
+                loadPinyinLibrary();
+            }
         }
 
         init();
