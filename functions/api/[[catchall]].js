@@ -100,7 +100,7 @@ async function handleApiRequest(request, env) {
           ).all();
           return jsonResponse(results || []);
         }
-        if (request.method === 'POST' && !pathParts[3]) {
+        if (request.method === 'POST' && !pathParts[2]) {
           const { categoryId, name, url, icon, description, tags, group_id } = await request.json();
           if (!categoryId || !name || !url) return jsonResponse({ error: 'Missing fields' }, 400);
           
