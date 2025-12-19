@@ -299,6 +299,7 @@ UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS 
    - 访问静态文件 404：确认已启用静态资源并将绑定名设为 `ASSETS`，且已上传 `public/`。
    - API 报错 500：确认已为 Worker 绑定 D1（绑定名 `DB`），且已按上文在 D1 控制台完成初始化 SQL。
    - 更新前端/后端：前端更新后重新上传 `public/` 并发布；后端在在线编辑器中修改脚本并保存部署。
+   -记得修改`wrangler.jsonc`配置
 
 ### workers部署优点
 
