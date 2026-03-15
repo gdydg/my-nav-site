@@ -957,7 +957,6 @@
         };
 
         // --- Global State and Configuration ---
-        const ADMIN_PASSWORD = "password123";
         const PLAYLISTS = [
             { server: 'netease', id: '2250011882' },
             { server: 'netease', id: '12607978369' },
@@ -1323,7 +1322,7 @@
             
             updatePlayButton(isPlay) {
                 const playIcon = 'M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z';
-                const pauseIcon = 'M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z';
+                const pauseIcon = 'M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z';
                 const icon = isPlay ? playIcon : pauseIcon;
                 this.playPauseBtnExpanded.querySelector('svg path').setAttribute('d', icon);
                 this.playPauseBtnCollapsed.querySelector('svg path').setAttribute('d', icon);
@@ -1837,18 +1836,30 @@
             DOMElements.adminLoginBtn.onclick = () => DOMElements.adminModal.classList.add('active');
             DOMElements.adminLogoutBtn.onclick = () => { DOMElements.adminModal.classList.remove('active'); DOMElements.adminLoginView.style.display = 'block'; DOMElements.adminPanelView.style.display = 'none'; DOMElements.passwordInput.value = ''; state.isLoggedIn = false; resetSiteForm(); };
             DOMElements.adminModal.onclick = e => { if (e.target === DOMElements.adminModal) DOMElements.adminLogoutBtn.click(); };
-            DOMElements.loginForm.onsubmit = e => {
+            
+            DOMElements.loginForm.onsubmit = async e => {
                 e.preventDefault();
-                if (DOMElements.passwordInput.value === ADMIN_PASSWORD) {
-                    state.isLoggedIn = true;
-                    DOMElements.loginError.textContent = '';
-                    DOMElements.adminLoginView.style.display = 'none';
-                    DOMElements.adminPanelView.style.display = 'flex';
-                    renderAdminPanel();
-                } else {
-                    DOMElements.loginError.textContent = translations[state.currentLanguage].passwordIncorrect;
+                const inputPassword = DOMElements.passwordInput.value;
+                
+                try {
+                    // 调用后端 API 进行安全验证
+                    const response = await api.post('auth/login', { password: inputPassword });
+                    
+                    if (response.success) {
+                        state.isLoggedIn = true;
+                        DOMElements.loginError.textContent = '';
+                        DOMElements.adminLoginView.style.display = 'none';
+                        DOMElements.adminPanelView.style.display = 'flex';
+                        renderAdminPanel();
+                    } else {
+                        DOMElements.loginError.textContent = translations[state.currentLanguage].passwordIncorrect;
+                    }
+                } catch (err) {
+                    console.error("Login failed:", err);
+                    DOMElements.loginError.textContent = translations[state.currentLanguage].passwordIncorrect || "Login failed.";
                 }
             };
+
             DOMElements.searchInput.oninput = filterAndRenderSites;
             DOMElements.saveBackgroundBtn.onclick = async () => {
                 const url = DOMElements.backgroundUrlInput.value.trim();
