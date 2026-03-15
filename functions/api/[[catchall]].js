@@ -1,5 +1,5 @@
 /**
- * Cloudflare Pages Functions - REST API Worker for Navigation Site
+ * Cloudflare Pages Functions & Workers - REST API Worker for Navigation Site
  * This version includes category reordering, site editing functionality, and secure auth.
  */
 
@@ -280,6 +280,18 @@ async function handleApiRequest(request, env) {
   }
 }
 
+// -------------------------------------------------------------
+// 【关键修改：双重导出，同时兼容 Pages Functions 和 Standard Worker】
+// -------------------------------------------------------------
+
+// 1. 给 Cloudflare Pages Functions 使用的入口
 export const onRequest = async ({ request, env }) => {
   return await handleApiRequest(request, env);
+};
+
+// 2. 给普通 Cloudflare Worker 使用的入口
+export default {
+  async fetch(request, env, ctx) {
+    return await handleApiRequest(request, env);
+  }
 };
