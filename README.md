@@ -287,7 +287,7 @@ UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS 
 
 5. 可选设置
 
-   - 演示站密码 `password123`。可在 Worker 的「设置」→「变量与密钥」中新增 `ADMIN_PASSWORD` 变量设置自己的密码。
+   - 演示站密码 `password123`。可在 Worker 的「设置」→「变量与密钥」中新增 `ADMIN_PASSWORD` 变量设置自己的密码(注意设置密码变量时要设置两次，第一次会丢失（部署几分钟之后），第二遍就可以了，懒得修复了，就这样了）。
    - 添加网站图标可到 `https://favicon.im/zh/` 获取，也可以不填，已默认嵌入根据网站地址获取网站图标功能。
 
 6. 绑定域名与路由
