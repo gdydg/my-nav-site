@@ -1534,6 +1534,15 @@
             }
         }
         
+        // Helper function to safely get hostname for favicon
+        function getHostnameFromUrl(urlStr) {
+            try {
+                return new URL(urlStr).hostname;
+            } catch (e) {
+                return urlStr.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+            }
+        }
+
         // Render frequent sites
         function renderFrequentSites() {
             const frequentSitesCount = parseInt(state.userPreferences.frequent_sites_count) || 8;
@@ -1559,7 +1568,8 @@
                     window.open(site.url, '_blank');
                 };
                 
-                const iconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=64`;
+                const hostname = getHostnameFromUrl(site.url);
+                const iconUrl = site.icon || `https://favicon.im/${hostname}`;
                 const shortcutKey = index < 9 ? index + 1 : null;
                 
                 item.innerHTML = `
@@ -1632,7 +1642,9 @@
                         recordSiteVisit(site.id);
                         window.open(site.url, '_blank');
                     };
-                    const iconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=64`;
+                    
+                    const hostname = getHostnameFromUrl(site.url);
+                    const iconUrl = site.icon || `https://favicon.im/${hostname}`;
                     const tagsHtml = site.tags ? `<div class="site-tags">${site.tags.split(',').map(tag => 
                         `<span class="site-tag">${tag.trim()}</span>`).join('')}</div>` : '';
                     card.innerHTML = `
@@ -1743,10 +1755,11 @@
                     const item = document.createElement('div');
                     item.className = 'site-admin-item';
                     item.dataset.siteId = site.id;
+                    const hostname = getHostnameFromUrl(site.url);
                     item.innerHTML = `
                         <div class="flex items-center gap-3">
                             <i data-lucide="grip-vertical" class="drag-handle text-gray-500"></i>
-                            <img src="${site.icon || `https://www.google.com/s2/favicons?domain=${site.url}&sz=32`}" 
+                            <img src="${site.icon || `https://favicon.im/${hostname}`}" 
                                  class="w-8 h-8 rounded object-contain" 
                                  onerror="this.onerror=null;this.src='https://placehold.co/32x32/777/eee?text=${site.name.charAt(0)}'">
                             <div>
@@ -1842,9 +1855,7 @@
                 const inputPassword = DOMElements.passwordInput.value;
                 
                 try {
-                    // 调用后端 API 进行安全验证
                     const response = await api.post('auth/login', { password: inputPassword });
-                    
                     if (response.success) {
                         state.isLoggedIn = true;
                         DOMElements.loginError.textContent = '';
@@ -1856,7 +1867,7 @@
                     }
                 } catch (err) {
                     console.error("Login failed:", err);
-                    DOMElements.loginError.textContent = translations[state.currentLanguage].passwordIncorrect || "Login failed.";
+                    DOMElements.loginError.textContent = translations[state.currentLanguage].passwordIncorrect;
                 }
             };
 
@@ -1995,7 +2006,16 @@
             });
             DOMElements.siteUrlInput.onblur = () => {
                 const url = DOMElements.siteUrlInput.value.trim();
-                if (url && !DOMElements.siteIconInput.value.trim()) { try { const domain = new URL(url).hostname; const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`; DOMElements.siteIconInput.value = iconUrl; DOMElements.iconPreview.src = iconUrl; } catch (e) { /* ignore invalid urls */ } }
+                if (url && !DOMElements.siteIconInput.value.trim()) { 
+                    try { 
+                        const domain = new URL(url).hostname; 
+                        const iconUrl = `https://favicon.im/${domain}`; 
+                        DOMElements.siteIconInput.value = iconUrl; 
+                        DOMElements.iconPreview.src = iconUrl; 
+                    } catch (e) { 
+                        /* ignore invalid urls */ 
+                    } 
+                }
             };
             DOMElements.siteIconInput.oninput = () => { DOMElements.iconPreview.src = DOMElements.siteIconInput.value.trim() || 'https://placehold.co/32x32/777/eee?text=?'; };
 
