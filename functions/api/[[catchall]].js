@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Functions - REST API Worker for Navigation Site
- * This version includes category reordering and site editing functionality.
+ * This version includes category reordering, site editing functionality, and secure auth.
  */
 
 const jsonResponse = (data, status = 200) => {
@@ -23,6 +23,22 @@ async function handleApiRequest(request, env) {
 
   try {
     switch (resource) {
+      case 'auth':
+        if (request.method === 'POST' && id === 'login') {
+          const { password } = await request.json();
+          
+          // 读取 Cloudflare 环境变量中的密码
+          // env.ADMIN_PASSWORD 对应你在 Cloudflare 面板设置的变量名
+          const correctPassword = env.ADMIN_PASSWORD; 
+          
+          if (password === correctPassword) {
+            return jsonResponse({ success: true });
+          } else {
+            return jsonResponse({ success: false, error: "Incorrect password" }, 401);
+          }
+        }
+        break;
+
       case 'settings':
         if (request.method === 'GET') {
           const stmt = env.DB.prepare('SELECT * FROM settings WHERE key = ?').bind('backgroundUrl');
