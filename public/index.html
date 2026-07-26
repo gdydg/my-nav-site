@@ -1134,7 +1134,7 @@
                 this.songTitle.textContent = translations[state.currentLanguage].gettingAudioUrl || "Getting audio URL...";
 
                 try {
-                    const response = await fetch(`https://music1.gittle.ggff.net/?id=${track.id}`);
+                    const response = await fetch(`https://music.hdf.pp.ua/?id=${track.id}`);
                     
                     if (!response.ok) {
                         throw new Error(`API request failed with status ${response.status}`);
