@@ -7,6 +7,12 @@
 
 示例站点：https://nav.666.x10.mx
 
+仓库地址：https://github.com/gdydg/my-nav-site
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/gdydg/my-nav-site)
+
+> 不想自己配环境：点上面按钮即可一键部署到你的 Cloudflare 账号。想自己改代码：先 Fork 仓库，再在 Worker 里连接这个仓库。详见下方「Cloudflare 部署」。
+
 ## 最新功能更新 🚀
 
 ### 1. 常用网站自动排序
@@ -99,7 +105,128 @@
 
 
 
-# Cloudflare 部署（无需终端）
+# Cloudflare 部署
+
+本项目部署到 **Cloudflare Workers**（`src/worker.js` + `public/` 静态资源 + D1 数据库），不需要自己的服务器。三种方式任选其一：
+
+| 方式 | 适合谁 | 要不要 GitHub |
+| --- | --- | --- |
+| [方式一：一键部署](#方式一一键部署推荐最简单) | 最快上线 | 需要（会自动克隆仓库到你的账号） |
+| [方式二：Fork 后 Worker 连接仓库](#方式二fork-仓库再用-worker-连接-git-部署) | 要自己改代码、后续自动更新 | 需要（先 Fork） |
+| [方式三：控制台手动创建](#方式三控制台手动创建-worker无需-git) | 不想用 Git | 不需要 |
+
+---
+
+## 方式一：一键部署（推荐，最简单）
+
+点击下面按钮，用 GitHub 和 Cloudflare 账号登录后，会自动完成：克隆仓库到你的 GitHub、创建 Worker、创建并绑定 D1、构建发布。
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/gdydg/my-nav-site)
+
+直达链接：<https://deploy.workers.cloudflare.com/?url=https://github.com/gdydg/my-nav-site>
+
+操作步骤：
+
+1. 点击按钮，先授权 GitHub，再授权/登录 Cloudflare。
+2. 在配置页可以改仓库名、Worker 名、D1 数据库名（默认 `my-nav-site` 即可）。
+3. 确认部署命令是 `npm run deploy`（会先执行 D1 migrations 再建表，再发布 Worker）。
+4. 点击部署，等绿色成功即可。访问 `https://<Worker名>.<你的子域>.workers.dev`。
+5. 打开该 Worker → **设置** → **变量和机密**：
+   - 已预置 `ADMIN_PASSWORD=password123`（演示密码）。
+   - 建议改成自己的密码。改完后重新部署一次。
+6. 以后改你账号下那份仓库并 `git push`，Cloudflare 会自动重新构建部署。
+
+如果首页能打开、后台保存报 500：到 **存储和数据库 → D1** 打开对应数据库，用下面的初始化 SQL 再执行一遍。正常情况下 `npm run deploy` 会跑 migrations，而且第一次调用 `/api` 时 Worker 也会自动建表，一般不用手动执行。
+
+---
+
+## 方式二：Fork 仓库，再用 Worker 连接 Git 部署
+
+适合要长期自己改前端/后端的用户。Worker 连上你 Fork 的仓库后，每次 `git push` 都会自动部署。
+
+### 1. Fork 仓库
+
+打开 [gdydg/my-nav-site](https://github.com/gdydg/my-nav-site)，点击右上角 **Fork**，Fork 到你自己的 GitHub 账号（不要改仓库结构）。
+
+### 2. 先创建自己的 D1 数据库
+
+`wrangler.jsonc` 里的 `database_id` 是模板占位，必须换成你自己的，否则构建会失败。
+
+1. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **存储和数据库** → **D1 SQL 数据库** → **创建**。
+2. 数据库名称填 `my-nav-site`（建议与配置文件一致）。
+3. 创建完成后复制 **数据库 ID**（一串 UUID）。
+
+### 3. 在 Fork 仓库里写入你的 database_id
+
+回到你 Fork 出来的仓库，编辑 `wrangler.jsonc`，只改 `database_id`：
+
+```jsonc
+{
+  "name": "my-nav-site",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-06-04",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "my-nav-site",
+      "database_id": "这里换成你刚刚复制的 D1 数据库 ID"
+    }
+  ]
+}
+```
+
+Worker 的 `name` 必须和后面在 Cloudflare 里创建的 Worker 名称一致，默认保持 `my-nav-site` 最省事。改完后 **Commit** 到 `main` 分支。
+
+### 4. 用 Worker 连接这个仓库
+
+1. Cloudflare Dashboard → **Workers 和 Pages** → **创建** / **创建应用**。
+2. 选择 **Import a repository** / **导入仓库**（不要选「先创建 Hello World Worker 再粘贴代码」）。
+3. 授权 GitHub，在列表里选中你 Fork 的 `my-nav-site`。
+4. 确认项目类型为 **Worker**（本仓库有 `wrangler.jsonc`，会自动识别，不要选成 Pages）。
+5. Worker 名称填 `my-nav-site`（必须和 `wrangler.jsonc` 的 `name` 一致，否则 Builds 会失败）。
+6. 构建配置建议：
+   - 根目录：`/`
+   - 构建命令：留空（本项目没有前端打包）
+   - 部署命令：`npm run deploy`
+7. 点击 **Save and Deploy**，等构建成功。
+
+部署命令 `npm run deploy` 会先执行 `wrangler d1 migrations apply DB --remote`，自动建表，一般不用再手动跑 SQL。
+
+### 5. 设置管理员密码
+
+打开该 Worker → **设置** → **变量和机密**：
+
+- 变量名：`ADMIN_PASSWORD`
+- 值：你的后台密码（演示站是 `password123`）
+- 保存后会再部署一次。如果第一次保存后密码丢失，再设一遍即可。
+
+### 6. 访问与后续更新
+
+- 使用 Workers 提供的 `*.workers.dev` 子域名，或在 **触达 / Triggers** 里绑定自己的域名。
+- 之后在 Fork 仓库改代码，`git push` 到已连接的分支，就会自动重新部署。
+
+### 已有 Worker 事后连接仓库
+
+如果 Worker 已经手动建好了，也可以后接 Git：
+
+1. 打开该 Worker → **设置** → **Builds** → **Connect**。
+2. 选择你 Fork 的仓库，部署命令填 `npm run deploy`。
+3. 向仓库推送一次即可触发部署。
+4. Worker 名称仍须与 `wrangler.jsonc` 的 `name` 一致。
+
+常见失败：
+
+- 构建提示找不到 D1 / database_id 无效：`wrangler.jsonc` 还没改成你自己的数据库 ID。
+- 构建提示 Worker name mismatch：控制台 Worker 名和 `wrangler.jsonc` 的 `name` 不一致。
+- 静态页面 404：确认 `wrangler.jsonc` 里 `assets.directory` 为 `./public`，绑定名为 `ASSETS`。
+
+---
+
+## 方式三：控制台手动创建 Worker（无需 Git）
 
 1.创建D1数据库`my-nav-site`，到控制台执行 SQL 命令
 
@@ -287,7 +414,7 @@ UPDATE sites SET display_order = id WHERE display_order = 0 OR display_order IS 
 
 5. 可选设置
 
-   - 演示站密码 `password123`。可在 Worker 的「设置」→「变量与密钥」中新增 `ADMIN_PASSWORD` 变量设置自己的密码(注意设置密码变量时要设置两次，第一次会丢失（部署几分钟之后），第二遍就可以了，懒得修复了，就这样了）。
+   - 演示站密码 `password123`。可在 Worker 的「设置」→「变量与密钥」中新增 `ADMIN_PASSWORD` 变量(密钥格式）设置自己的密码(注意设置密码变量每次更新或者重新部署都要重新设置变量，懒得修复了，就这样了）。
    - 添加网站图标可到 `https://favicon.im/zh/` 获取，也可以不填，已默认嵌入根据网站地址获取网站图标功能。
 
 6. 绑定域名与路由
