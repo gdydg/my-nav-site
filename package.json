@@ -4,11 +4,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --local",
-    "deploy": "wrangler deploy"
+    "dev": "wrangler d1 migrations apply DB --local && wrangler dev --local",
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply DB --remote",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local"
   },
   "devDependencies": {
     "wrangler": "^3.80.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "ADMIN_PASSWORD": {
+        "description": "后台管理员密码。一键部署后请到 Worker「设置 → 变量和机密」修改，默认 `password123`。"
+      },
+      "DB": {
+        "description": "导航站使用的 D1 数据库。一键部署会自动创建；Fork 连接仓库时请先创建 D1 并把 database_id 写入 wrangler.jsonc。"
+      }
+    }
   }
 }
-
