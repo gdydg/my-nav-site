@@ -1460,7 +1460,7 @@
         function resetSiteForm() {
             state.editingSiteId = null;
             DOMElements.siteForm.reset();
-            DOMElements.iconPreview.src = 'https://placehold.co/32x32/777/eee?text=?';
+            DOMElements.iconPreview.src = fallbackIconData('?', 32);
             DOMElements.siteFormTitle.setAttribute('data-i18n-key', 'siteManagement');
             DOMElements.siteSubmitBtn.setAttribute('data-i18n-key', 'addSite');
             DOMElements.cancelEditBtn.classList.add('hidden');
@@ -1543,6 +1543,36 @@
             }
         }
 
+        function fallbackIconData(name, size = 64) {
+            const letter = String(name || '?').charAt(0).replace(/[<>&"'`]/g, '?');
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="100%" height="100%" rx="8" fill="#6b7280"/><text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="${Math.floor(size * 0.42)}" font-family="system-ui,sans-serif">${letter}</text></svg>`;
+            return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+        }
+
+        function getSiteIconUrl(site) {
+            const icon = (site && site.icon ? String(site.icon) : '').trim();
+            const siteUrl = site && site.url ? site.url : '';
+            if (icon && (icon.startsWith('data:') || icon.startsWith('/') || icon.startsWith('./') || icon.startsWith('../'))) {
+                if (icon.startsWith('/api/favicon')) return icon;
+                if (icon.startsWith('data:') || !icon.includes('favicon.im')) return icon;
+            }
+            let host = '';
+            const favim = icon.match(/^https?:\/\/(?:www\.)?favicon\.im\/([^/?#]+)/i);
+            if (favim) {
+                host = decodeURIComponent(favim[1]);
+            } else if (icon && /^https?:\/\//i.test(icon) && /favicon\.im|google\.com\/s2\/favicons|icons\.duckduckgo\.com\/ip3|gstatic\.com\/favicon/i.test(icon)) {
+                host = getHostnameFromUrl(siteUrl) || getHostnameFromUrl(icon);
+                return `/api/favicon?host=${encodeURIComponent(host)}&url=${encodeURIComponent(icon)}`;
+            } else if (icon && /^https?:\/\//i.test(icon)) {
+                return `/api/favicon?url=${encodeURIComponent(icon)}`;
+            } else {
+                host = getHostnameFromUrl(siteUrl || icon);
+            }
+            host = (host || getHostnameFromUrl(siteUrl) || '').replace(/^www\./, '') || getHostnameFromUrl(siteUrl);
+            if (!host) return fallbackIconData(site && site.name, 64);
+            return `/api/favicon?host=${encodeURIComponent(host)}`;
+        }
+
         // Render frequent sites
         function renderFrequentSites() {
             const frequentSitesCount = parseInt(state.userPreferences.frequent_sites_count) || 8;
@@ -1568,14 +1598,13 @@
                     window.open(site.url, '_blank');
                 };
                 
-                const hostname = getHostnameFromUrl(site.url);
-                const iconUrl = site.icon || `https://favicon.im/${hostname}`;
+                const iconUrl = getSiteIconUrl(site);
                 const shortcutKey = index < 9 ? index + 1 : null;
                 
                 item.innerHTML = `
                     ${shortcutKey ? `<span class="shortcut-hint">${shortcutKey}</span>` : ''}
                     <img src="${iconUrl}" alt="${site.name}" class="frequent-site-icon" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/48x48/777/eee?text=${site.name.charAt(0)}'">
+                         onerror="this.onerror=null;this.src='${fallbackIconData(site.name, 48)}'">
                     <span class="frequent-site-name">${site.name}</span>
                 `;
                 
@@ -1643,13 +1672,12 @@
                         window.open(site.url, '_blank');
                     };
                     
-                    const hostname = getHostnameFromUrl(site.url);
-                    const iconUrl = site.icon || `https://favicon.im/${hostname}`;
+                    const iconUrl = getSiteIconUrl(site);
                     const tagsHtml = site.tags ? `<div class="site-tags">${site.tags.split(',').map(tag => 
                         `<span class="site-tag">${tag.trim()}</span>`).join('')}</div>` : '';
                     card.innerHTML = `
                         <img src="${iconUrl}" alt="${site.name}" class="w-16 h-16 mb-4 rounded-lg object-contain" 
-                             onerror="this.onerror=null;this.src='https://placehold.co/64x64/777/eee?text=${site.name.charAt(0)}'">
+                             onerror="this.onerror=null;this.src='${fallbackIconData(site.name, 64)}'">
                         <h3 class="font-semibold text-lg mb-1 truncate w-full">${site.name}</h3>
                         <p class="text-gray-400 text-sm flex-grow">${site.description || '&nbsp;'}</p>
                         ${tagsHtml}
@@ -1755,13 +1783,12 @@
                     const item = document.createElement('div');
                     item.className = 'site-admin-item';
                     item.dataset.siteId = site.id;
-                    const hostname = getHostnameFromUrl(site.url);
                     item.innerHTML = `
                         <div class="flex items-center gap-3">
                             <i data-lucide="grip-vertical" class="drag-handle text-gray-500"></i>
-                            <img src="${site.icon || `https://favicon.im/${hostname}`}" 
+                            <img src="${getSiteIconUrl(site)}" 
                                  class="w-8 h-8 rounded object-contain" 
-                                 onerror="this.onerror=null;this.src='https://placehold.co/32x32/777/eee?text=${site.name.charAt(0)}'">
+                                 onerror="this.onerror=null;this.src='${fallbackIconData(site.name, 32)}'">
                             <div>
                                 <p class="font-semibold">${site.name}</p>
                                 <p class="text-xs text-gray-400">${site.url}</p>
@@ -1951,7 +1978,7 @@
                         DOMElements.siteDescInput.value = siteToEdit.description || '';
                         DOMElements.siteTagsInput.value = siteToEdit.tags || '';
                         DOMElements.siteGroupSelect.value = siteToEdit.group_id || '';
-                        DOMElements.iconPreview.src = siteToEdit.icon || `https://placehold.co/32x32/777/eee?text=${siteToEdit.name.charAt(0)}`;
+                        DOMElements.iconPreview.src = getSiteIconUrl(siteToEdit);
                         DOMElements.siteFormTitle.setAttribute('data-i18n-key', 'editSite');
                         DOMElements.siteSubmitBtn.setAttribute('data-i18n-key', 'saveChanges');
                         DOMElements.cancelEditBtn.classList.remove('hidden');
@@ -2008,16 +2035,20 @@
                 const url = DOMElements.siteUrlInput.value.trim();
                 if (url && !DOMElements.siteIconInput.value.trim()) { 
                     try { 
-                        const domain = new URL(url).hostname; 
-                        const iconUrl = `https://favicon.im/${domain}`; 
-                        DOMElements.siteIconInput.value = iconUrl; 
-                        DOMElements.iconPreview.src = iconUrl; 
+                        const preview = getSiteIconUrl({ url, icon: '' });
+                        DOMElements.iconPreview.src = preview;
                     } catch (e) { 
                         /* ignore invalid urls */ 
                     } 
                 }
             };
-            DOMElements.siteIconInput.oninput = () => { DOMElements.iconPreview.src = DOMElements.siteIconInput.value.trim() || 'https://placehold.co/32x32/777/eee?text=?'; };
+            DOMElements.siteIconInput.oninput = () => {
+                const custom = DOMElements.siteIconInput.value.trim();
+                const url = DOMElements.siteUrlInput.value.trim();
+                DOMElements.iconPreview.src = custom
+                    ? getSiteIconUrl({ url, icon: custom })
+                    : (url ? getSiteIconUrl({ url, icon: '' }) : fallbackIconData('?', 32));
+            };
 
             DOMElements.mobileMenuToggle.onclick = (e) => { e.stopPropagation(); toggleMobileSidebar(); };
             DOMElements.mobileSidebarClose.onclick = toggleMobileSidebar;
