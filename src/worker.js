@@ -84,14 +84,135 @@ async function ensureSchema(env) {
   await schemaReady;
 }
 
-async function handleApiRequest(request, env) {
+
+function isPrivateHost(host) {
+  if (!host) return true;
+  const h = host.toLowerCase().replace(/\.$/, '');
+  if (h === 'localhost' || h.endsWith('.local') || h.endsWith('.internal')) return true;
+  if (h === '::1' || h === '[::1]') return true;
+  const ipv4 = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4) {
+    const a = Number(ipv4[1]);
+    const b = Number(ipv4[2]);
+    if (a === 0 || a === 10 || a === 127 || a === 169 || a === 255) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+  }
+  return false;
+}
+
+function extractFaviconHost(value) {
+  if (!value) return '';
+  try {
+    if (/^https?:\/\//i.test(value)) {
+      const u = new URL(value);
+      if (u.hostname === 'favicon.im' || u.hostname.endsWith('.favicon.im')) {
+        return decodeURIComponent(u.pathname.replace(/^\//, '').split('/')[0] || '');
+      }
+      const domainParam = u.searchParams.get('domain') || u.searchParams.get('url') || u.searchParams.get('domain_url');
+      if (domainParam) {
+        try { return new URL(domainParam.startsWith('http') ? domainParam : `https://${domainParam}`).hostname; }
+        catch { return domainParam.replace(/^https?:\/\//i, '').split('/')[0]; }
+      }
+      return u.hostname;
+    }
+    return value.replace(/^https?:\/\//i, '').split('/')[0];
+  } catch {
+    return '';
+  }
+}
+
+async function handleFavicon(request, ctx) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
+  }
+
+  const reqUrl = new URL(request.url);
+  const rawHost = (reqUrl.searchParams.get('host') || '').trim();
+  const rawUrl = (reqUrl.searchParams.get('url') || '').trim();
+  const host = extractFaviconHost(rawHost || rawUrl).replace(/[^\w.-]/g, '');
+
+  if (!host || isPrivateHost(host) || host.length > 253) {
+    return new Response('Invalid host', { status: 400, headers: corsHeaders });
+  }
+
+  const cache = caches.default;
+  const cacheKey = new Request(`${reqUrl.origin}/api/favicon?host=${encodeURIComponent(host)}`, { method: 'GET' });
+  const cached = await cache.match(cacheKey);
+  if (cached) {
+    const hit = new Response(cached.body, cached);
+    hit.headers.set('Access-Control-Allow-Origin', '*');
+    return hit;
+  }
+
+  const candidates = [];
+  if (rawUrl && /^https?:\/\//i.test(rawUrl) && !isPrivateHost(extractFaviconHost(rawUrl))) {
+    candidates.push(rawUrl);
+  }
+  candidates.push(
+    `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(host)}`,
+    `https://icons.duckduckgo.com/ip3/${host}.ico`,
+    `https://favicon.im/${host}`,
+    `https://${host}/favicon.ico`
+  );
+
+  for (const src of candidates) {
+    try {
+      const upstream = await fetch(src, {
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NavSiteFavicon/1.0)' },
+        cf: { cacheTtl: 86400, cacheEverything: true }
+      });
+      if (!upstream.ok) continue;
+      const contentType = (upstream.headers.get('Content-Type') || '').toLowerCase();
+      if (contentType.includes('text/html') || contentType.includes('application/json')) continue;
+      const buf = await upstream.arrayBuffer();
+      if (!buf || buf.byteLength < 32 || buf.byteLength > 512 * 1024) continue;
+      const type = contentType.includes('image') || contentType.includes('octet-stream') || contentType.includes('icon')
+        ? (contentType.split(';')[0] || 'image/png')
+        : 'image/png';
+      const headers = {
+        'Content-Type': type,
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+        'Access-Control-Allow-Origin': '*'
+      };
+      const body = request.method === 'HEAD' ? null : buf;
+      const out = new Response(body, { status: 200, headers });
+      if (ctx && ctx.waitUntil) ctx.waitUntil(cache.put(cacheKey, out.clone()));
+      return out;
+    } catch (err) {
+      console.error('Favicon source failed:', src, err && err.message);
+    }
+  }
+
+  const letter = (host.replace(/^www\./, '').charAt(0) || '?').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="12" fill="#6b7280"/><text x="32" y="42" text-anchor="middle" fill="#fff" font-size="28" font-family="system-ui,sans-serif">${letter}</text></svg>`;
+  return new Response(svg, {
+    status: 200,
+    headers: {
+      'Content-Type': 'image/svg+xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
+}
+
+async function handleApiRequest(request, env, ctx) {
+  const { pathname } = new URL(request.url);
+  const pathPartsEarly = pathname.split('/').filter(Boolean);
+  if (pathPartsEarly[0] === 'api' && pathPartsEarly[1] === 'favicon') {
+    return handleFavicon(request, ctx);
+  }
+
   await ensureSchema(env);
   // 处理浏览器的 CORS 预检请求
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const { pathname } = new URL(request.url);
   const pathParts = pathname.split('/').filter(Boolean);
 
   if (pathParts[0] !== 'api') {
@@ -347,7 +468,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname.startsWith('/api')) {
-      return handleApiRequest(request, env);
+      return handleApiRequest(request, env, ctx);
     }
     return env.ASSETS.fetch(request);
   }
