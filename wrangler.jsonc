@@ -1,17 +1,22 @@
 {
-    "name": "my-nav-site",
-    "main": "src/worker.js",
-    "compatibility_date": "2025-06-04",
-    "assets": {
-      "directory": "./public",
-      "binding": "ASSETS"
-    },
-    "d1_databases": [
-      {
-        "binding": "DB",
-        "database_name": "my-nav-site",
-        "database_id": "a9fc870e-8fa4-4133-86d1-03056086cbc9"
-      }
-    ]
+  // 一键部署会自动创建 D1 并回写 database_id。
+  // Fork / Git 连接仓库部署时，请保留你自己的 database_id，不要改绑定名 DB / ASSETS。
+  "name": "my-nav-site",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-06-04",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "my-nav-site",
+      "database_id": "a9fc870e-8fa4-4133-86d1-03056086cbc9",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": true
   }
-  
+}
