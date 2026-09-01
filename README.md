@@ -5,7 +5,7 @@
 
 # 关于项目
 
-示例站点：https://nas.marvellab.tech/
+示例站点：https://nav.666.x10.mx
 
 ## 最新功能更新 🚀
 
