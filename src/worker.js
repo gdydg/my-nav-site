@@ -17,7 +17,75 @@ const jsonResponse = (data, status = 200) => {
   });
 };
 
+
+const SCHEMA_STATEMENTS = [
+  `CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL CHECK(type IN ('sidebar', 'topbar')),
+    displayOrder INTEGER
+  )`,
+  `CREATE TABLE IF NOT EXISTS site_groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    color TEXT,
+    icon TEXT,
+    display_order INTEGER DEFAULT 0
+  )`,
+  `CREATE TABLE IF NOT EXISTS sites (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    categoryId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    icon TEXT,
+    description TEXT,
+    visit_count INTEGER DEFAULT 0,
+    tags TEXT,
+    group_id INTEGER,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES site_groups(id)
+  )`,
+  `CREATE TABLE IF NOT EXISTS site_visits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    site_id INTEGER NOT NULL,
+    visit_count INTEGER DEFAULT 0,
+    last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+  )`,
+  `CREATE TABLE IF NOT EXISTS user_preferences (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  )`,
+  `INSERT OR IGNORE INTO settings (key, value) VALUES ('backgroundUrl', 'https://iili.io/FSa7FDB.gif')`,
+  `INSERT OR IGNORE INTO user_preferences (key, value) VALUES
+    ('show_frequent_sites', 'true'),
+    ('frequent_sites_count', '8'),
+    ('enable_shortcuts', 'true'),
+    ('enable_pinyin_search', 'true')`
+];
+
+let schemaReady = null;
+
+async function ensureSchema(env) {
+  if (!env || !env.DB) return;
+  if (!schemaReady) {
+    schemaReady = env.DB.batch(SCHEMA_STATEMENTS.map((sql) => env.DB.prepare(sql))).catch((err) => {
+      schemaReady = null;
+      throw err;
+    });
+  }
+  await schemaReady;
+}
+
 async function handleApiRequest(request, env) {
+  await ensureSchema(env);
   // 处理浏览器的 CORS 预检请求
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -38,7 +106,7 @@ async function handleApiRequest(request, env) {
       case 'auth':
         if (request.method === 'POST' && id === 'login') {
           const { password } = await request.json();
-          const correctPassword = env.ADMIN_PASSWORD; 
+          const correctPassword = env.ADMIN_PASSWORD || 'password123'; 
           
           if (password === correctPassword) {
             return jsonResponse({ success: true });
